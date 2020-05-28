@@ -1,6 +1,6 @@
 <?php
-use lib\VCard\VCard;
-require_once 'lib/VCard/VCard.php';
+use SKien\VCard\VCard;
+require_once 'autoloader.php';
 
 	echo '<!DOCTYPE html>' . PHP_EOL;
 	echo '<html>' . PHP_EOL;

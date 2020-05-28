@@ -1,8 +1,8 @@
 <?php
-use lib\VCard\VCard;
-use lib\VCard\VCardContact;
-use lib\VCard\VCardAddress;
-require_once 'lib/VCard/VCard.php';
+use SKien\VCard\VCard;
+use SKien\VCard\VCardContact;
+use SKien\VCard\VCardAddress;
+require_once 'autoloader.php';
 require_once 'blobPortrait.php';
 
 	$oVCard = new VCard();
