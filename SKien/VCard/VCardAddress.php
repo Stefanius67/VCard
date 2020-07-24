@@ -1,24 +1,22 @@
 <?php
 namespace SKien\VCard;
 
-use SKien\VCard\VCard;
-
 /**
- * class representing address
+ * class representing address within a contact.
+ * Each contact may contains multiple adresses.
  *
  * uses helpers from trait VCardHelper
  * @see VCardHelper
  *
- * ### History
- * ** 2020-02-23 **
- * - initial version.
- * 
- * ** 2020-05-28 **
- * - renamed namespace to fit PSR-4 recommendations for autoloading.
+* history:
+ * date         version
+ * 2020-02-23   initial version.
+ * 2020-05-28   renamed namespace to fit PSR-4 recommendations for autoloading.
+ * 2020-07-22   added missing PHP 7.4 type hints / docBlock changes 
  * 
  * @package SKien-VCard
  * @since 1.0.0
- * @version 1.0.2
+ * @version 1.0.3
  * @author Stefanius <s.kien@online.de>
  * @copyright MIT License - see the LICENSE file for details
  */
@@ -26,24 +24,18 @@ class VCardAddress
 {
     use VCardHelper;
     
-    /** street (including house number)
-     *  @var string  */
-    protected $strStr;
-    /** city
-     *  @var string  */
-    protected $strCity;
-    /** postcode
-     *  @var string  */
-    protected $strPostcode;
-    /** country
-     *  @var string  */
-    protected $strCountry;
-    /** region
-     *  @var string  */
-    protected $strRegion;
-    /** type (VCard::HOME, VCard::WORK, VCard::POSTAL, VCard::PARCEL) 
-     *  @var string  */
-    protected $strType;
+    /** @var string  street (including house number)    */
+    protected string $strStr = '';
+    /** @var string  city   */
+    protected string $strCity = '';
+    /** @var string  postcode   */
+    protected string $strPostcode = '';
+    /** @var string  country */
+    protected string $strCountry = '';
+    /** @var string  region */
+    protected string $strRegion = '';
+    /** @var string  type (VCard::HOME, VCard::WORK, VCard::POSTAL, VCard::PARCEL)  */
+    protected string $strType = '';
     
     /**
      * full address information.
@@ -59,7 +51,7 @@ class VCardAddress
      * @param bool $bPreferred
      * @return string
      */
-    public function buildFullAddress($bPreferred) 
+    public function buildFullAddress(bool $bPreferred) : string
     {
         $strField = 'ADR;TYPE=' . $this->strType;
         if ($bPreferred) {
@@ -80,10 +72,10 @@ class VCardAddress
 
     /**
      * label for address
-     * @param unknown $bPreferred
+     * @param bool $bPreferred
      * @return string
      */
-    public function buildLabel($bPreferred) 
+    public function buildLabel(bool $bPreferred): string
     {
         $strField = 'LABEL;TYPE=' . $this->strType;
         if ($bPreferred) {
@@ -113,8 +105,9 @@ class VCardAddress
      *  delimitered by semicolon (be aware of masked delimiters)
      *  
      * @param string $strValue
+     * @param array  $aParams
      */
-    public function parseFullAddress($strValue, $aParams)
+    public function parseFullAddress(string $strValue, array $aParams)
     {
         $aSplit = $this->explodeMaskedString(';', $strValue);
         if (isset($aSplit[2])) {
@@ -140,97 +133,97 @@ class VCardAddress
     }
 
     /**
-     * @param field_type $strStr
+     * @param string $strStr
      */
-    public function setStr($strStr) 
+    public function setStr(string $strStr) 
     {
         $this->strStr = $strStr;
     }
     
     /**
-     * @param field_type $strCity
+     * @param string $strCity
      */
-    public function setCity($strCity) 
+    public function setCity(string $strCity) 
     {
         $this->strCity = $strCity;
     }
     
     /**
-     * @param field_type $strPostcode
+     * @param string $strPostcode
      */
-    public function setPostcode($strPostcode) 
+    public function setPostcode(string $strPostcode) 
     {
         $this->strPostcode = $strPostcode;
     }
     
     /**
-     * @param field_type $strCountry
+     * @param string $strCountry
      */
-    public function setCountry($strCountry) 
+    public function setCountry(string $strCountry) 
     {
         $this->strCountry = $strCountry;
     }
     
     /**
-     * @param field_type $strRegion
+     * @param string $strRegion
      */
-    public function setRegion($strRegion) 
+    public function setRegion(string $strRegion) 
     {
         $this->strRegion = $strRegion;
     }
     
     /**
-     * @param field_type $strType
+     * @param string $strType
      */
-    public function setType($strType) 
+    public function setType(string $strType) 
     {
         $this->strType = $strType;
     }
     
     /**
-     * @return the $strStr
+     * @return string $strStr
      */
-    public function getStr() 
+    public function getStr() : string
     {
         return $this->strStr;
     }
 
     /**
-     * @return the $strCity
+     * @return string  $strCity
      */
-    public function getCity() 
+    public function getCity() : string
     {
         return $this->strCity;
     }
 
     /**
-     * @return the $strPostcode
+     * @return string  $strPostcode
      */
-    public function getPostcode() 
+    public function getPostcode() : string
     {
         return $this->strPostcode;
     }
 
     /**
-     * @return the $strCountry
+     * @return string  $strCountry
      */
-    public function getCountry() 
+    public function getCountry() : string
     {
         return $this->strCountry;
     }
 
     /**
-     * @return the $strRegion
+     * @return string  $strRegion
      */
-    public function getRegion() 
+    public function getRegion() : string
     {
         return $this->strRegion;
     }
 
     /**
-     * @return the $strType
+     * @return string  $strType
      */
-    public function getType() 
+    public function getType() : string
     {
         return $this->strType;
     }

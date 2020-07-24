@@ -1,24 +1,21 @@
 <?php
 namespace SKien\VCard;
 
-use SKien\VCard\VCard;
-
 /**
  * class representing all data to one contact 
  *
  * uses helpers from trait VCardHelper
  * @see VCardHelper
  *
- * ### History
- * ** 2020-02-23 **
- * - initial version.
- * 
- * ** 2020-05-28 **
- * - renamed namespace to fit PSR-4 recommendations for autoloading.
+* history:
+ * date         version
+ * 2020-02-23   initial version.
+ * 2020-05-28   renamed namespace to fit PSR-4 recommendations for autoloading.
+ * 2020-07-22   added missing PHP 7.4 type hints / docBlock changes 
  * 
  * @package SKien-VCard
  * @since 1.0.0
- * @version 1.0.2
+ * @version 1.0.3
  * @author Stefanius <s.kien@online.de>
  * @copyright MIT License - see the LICENSE file for details
  */
@@ -26,72 +23,50 @@ class VCardContact
 {
     use VCardHelper;
     
-    /** lastname
-     *  @var string  */
-    protected $strLastName = '';
-    /** firstname
-     *  @var string  */
-    protected $strFirstName = '';
-    /** prefix (salutation, title,...)
-     *  @var string  */
-    protected $strPrefix = '';
-    /** suffix (graduation,...)
-     *  @var string  */
-    protected $strSuffix = '';
-    /** nickname
-     *  @var string  */
-    protected $strNickName = '';
-    /** organisation name
-     *  @var string  */
-    protected $strOrganisation = '';
-    /** position within the organisation
-     *  @var string  */
-    protected $strPosition = '';
-    /** section within the organisation
-     *  @var string  */
-    protected $strSection = '';
-    /** role / profession
-     *  @var string  */
-    protected $strRole = '';
-    /** array of VCardAddress objects
-     *  @var array   */
-    protected $aAddress     = null;
-    /** index of preferred address
-     *  @var int     */
-    protected $iPrefAddress = 0;
-    /** array of phone numbers
-     *  @var array   */
-    protected $aPhone       = null;
-    /** index of preferred phone number
-     *  @var int     */
-    protected $iPrefPhone = 0;
-    /** array of email addresses
-     *  @var array   */
-    protected $aEMail       = null;
-    /** index of preferred mail address
-     *  @var int     */
-    protected $iPrefEMail = 0;
-    /** array of categories
-     *  @var array   */
-    protected $aCategories      = null;
-    /** homepage URL
-     *  @var string  */
-    protected $strHomepage = '';
-    /** date of birth in format YYYY-DD-MM
-     *  @var string  */
-    protected $strDateOfBirth = '';
-    /** gender (0: not specified, 1: female, 2: male)
-     *  @var int     */
-    protected $iGender = 0;
-    /** note
-     *  @var string  */
-    protected $strNote = '';
-    /** address label (readonly)
-     *  @var string  */
-    protected $strLabel = '';
-    /** binary portrait base64 coded 
-     *  @var string  */
-    protected $blobPortrait = '';
+    /** @var string  lastname   */
+    protected string $strLastName = '';
+    /** @var string  firstname  */
+    protected string $strFirstName = '';
+    /** @var string  prefix (salutation, title,...) */
+    protected string $strPrefix = '';
+    /** @var string  suffix (graduation,...)    */
+    protected string $strSuffix = '';
+    /** @var string  nickname   */
+    protected string $strNickName = '';
+    /** @var string  organisation name  */
+    protected string $strOrganisation = '';
+    /** @var string  position within the organisation   */
+    protected string $strPosition = '';
+    /** @var string  section within the organisation    */
+    protected string $strSection = '';
+    /** @var string  role / profession  */
+    protected string $strRole = '';
+    /** @var array   array of VCardAddress objects  */
+    protected ?array $aAddress     = null;
+    /** @var int     index of preferred address */
+    protected int $iPrefAddress = 0;
+    /** @var array   array of phone numbers */
+    protected ?array $aPhone       = null;
+    /** @var int     index of preferred phone number    */
+    protected int $iPrefPhone = 0;
+    /** @var array   array of email addresses   */
+    protected ?array $aEMail       = null;
+    /** @var int     index of preferred mail address    */
+    protected int $iPrefEMail = 0;
+    /** @var array   array of categories    */
+    protected ?array $aCategories  = null;
+    /** @var string  homepage URL   */
+    protected string $strHomepage = '';
+    /** @var string  date of birth in format YYYY-DD-MM */
+    protected string $strDateOfBirth = '';
+    /** @var int     gender (0: not specified, 1: female, 2: male)  */
+    protected int $iGender = 0;
+    /** @var string  note   */
+    protected string $strNote = '';
+    /** @var string  address label (readonly)   */
+    protected string $strLabel = '';
+    /** @var string  binary portrait base64 coded   */
+    protected string $blobPortrait = '';
     
     /**
      * create empty contact
@@ -108,7 +83,7 @@ class VCardContact
      * create data buffer 
      * @return string
      */
-    public function buildData()
+    public function buildData() : string
     {
         $buffer = '';
         
@@ -204,10 +179,10 @@ class VCardContact
      * add property from import file.
      * 
      * @param string $strName
-     * @param \ArrayObject $aParams
+     * @param array $aParams
      * @param string $strValue
      */
-    public function addProperty($strName, $aParams, $strValue) 
+    public function addProperty(string $strName, array $aParams, string $strValue) 
     {
         // table to parse property depending on propertyname.
         // value have to be either name of method with signature
@@ -263,9 +238,9 @@ class VCardContact
      *  delimitered by semicolon (be aware of masked delimiters)
      *  
      * @param string $strValue
-     * @param \ArrayObject $aParams
+     * @param array $aParams
      */
-    protected function parseName($strValue, $aParams)
+    protected function parseName(string $strValue, array $aParams)
     {
         $aSplit = $this->explodeMaskedString(';', $strValue);
         $this->strLastName = $this->unmaskString($aSplit[0]);       // family name
@@ -282,10 +257,10 @@ class VCardContact
 
     /**
      * @param string $strValue
+     * @param array $aParams
      * @see VCardAddress::parseFullAddress()
-     * @param \ArrayObject $aParams
      */
-    protected function parseAdr($strValue, $aParams)
+    protected function parseAdr(string $strValue, array $aParams)
     {
         $oAdr = new VCardAddress();
         $oAdr->parseFullAddress($strValue, $aParams);
@@ -300,9 +275,9 @@ class VCardContact
     /**
      * unmask value and add with typeinfo to phone list
      * @param string $strValue
-     * @param \ArrayObject $aParams
+     * @param array $aParams
      */
-    protected function parseTel($strValue, $aParams)
+    protected function parseTel(string $strValue, array $aParams)
     {
         $strValue = $this->unmaskString($strValue);
         $this->addPhone($strValue, $aParams['TYPE'], strpos($aParams['TYPE'], 'PREF') !== false);
@@ -311,9 +286,9 @@ class VCardContact
     /**
      * unmask value and add to email list
      * @param string $strValue
-     * @param \ArrayObject $aParams
+     * @param array $aParams
      */
-    protected function parseEMail($strValue, $aParams)
+    protected function parseEMail(string $strValue, array $aParams)
     {
         $strValue = $this->unmaskString($strValue);
         $this->addEMail($strValue, strpos($aParams['TYPE'], 'PREF') !== false);
@@ -322,9 +297,9 @@ class VCardContact
     /**
      * split into company and section
      * @param string $strValue
-     * @param \ArrayObject $aParams
+     * @param array $aParams
      */
-    protected function parseOrg($strValue, $aParams)
+    protected function parseOrg(string $strValue, array $aParams)
     {
         $aSplit = $this->explodeMaskedString(';', $strValue);
         $this->strOrganisation = $this->unmaskString($aSplit[0]);
@@ -336,9 +311,9 @@ class VCardContact
     /**
      * split comma separated categories
      * @param string $strValue
-     * @param \ArrayObject $aParams
+     * @param array $aParams
      */
-    protected function parseCategories($strValue, $aParams)
+    protected function parseCategories(string $strValue, array $aParams)
     {
         $aSplit = $this->explodeMaskedString(',', $strValue);
         foreach ($aSplit as $strCategory) {
@@ -348,9 +323,9 @@ class VCardContact
 
     /**
      * @param string $strValue
-     * @param \ArrayObject $aParams
+     * @param array $aParams
      */
-    protected function parsePhoto($strValue, $aParams)
+    protected function parsePhoto(string $strValue, array $aParams)
     {
         $strEncoding = isset($aParams['ENCODING']) ? $aParams['ENCODING'] : '';
         if ($strEncoding == 'B' || $strEncoding == 'BASE64') {
@@ -370,7 +345,7 @@ class VCardContact
      * @param VCardAddress $oAddress
      * @param bool $bPreferred
      */
-    public function addAddress(VCardAddress $oAddress, $bPreferred) 
+    public function addAddress(VCardAddress $oAddress, bool $bPreferred) 
     {
         if ($bPreferred) {
             $this->iPrefAddress = count($this->aAddress);
@@ -386,7 +361,7 @@ class VCardContact
      * @param string $strType   one of VCard::WORK, VCard::HOME, VCard::CELL, VCard::FAX
      * @param bool $bPreferred
      */
-    public function addPhone($strPhone, $strType, $bPreferred) 
+    public function addPhone(string $strPhone, string $strType, bool $bPreferred) 
     {
         if ($bPreferred) {
             $this->iPrefPhone = count($this->aPhone);
@@ -399,7 +374,7 @@ class VCardContact
      * @param string $strEMail
      * @param bool $bPreferred
      */
-    public function addEMail($strEMail, $bPreferred) 
+    public function addEMail(string $strEMail, bool $bPreferred) 
     {
         if ($bPreferred) {
             // just set preferred mail on top of the list!
@@ -413,14 +388,14 @@ class VCardContact
      * add category
      * @param string $strCategory
      */
-    public function addCategory($strCategory) 
+    public function addCategory(string $strCategory) 
     {
         $this->aCategories[] = $strCategory;
     }
 
     /**
      * set date of birth
-     * @param mixed $DateOfSignature    may be string (format YYYY-MM-DD), int (unixtimestamp) or DateTime - object
+     * @param mixed $DateOfBirth    may be string (format YYYY-MM-DD), int (unixtimestamp) or DateTime - object
      */
     public function setDateOfBirth($DateOfBirth) 
     {
@@ -436,15 +411,16 @@ class VCardContact
 
     /**
      * gender.
-     * MS-extension!<br/>
-     * windows contacts: export/import
-     * outlook: import only
+     * MS-extension!
+     * 
+     * windows contacts: export/import.
+     * outlook: import only.
      *
      * only male or female accepted
      *
      * @param string $strGender
      */
-    public function setGender($strGender) 
+    public function setGender(string $strGender) 
     {
         $chGender = strtolower(substr($strGender, 0, 1));
         if (in_array($chGender, array('w', 'f'))) {
@@ -459,9 +435,9 @@ class VCardContact
     /**
      * set portrait from image file
      * supported types are JPG, PNG, GIF and BMP
-     * @param sring $strFilename
+     * @param string $strFilename
      */
-    public function setPortraitFile($strFilename) 
+    public function setPortraitFile(string $strFilename) 
     {
         if (filter_var($strFilename, FILTER_VALIDATE_URL)) {
             // get type from extension
@@ -471,7 +447,6 @@ class VCardContact
             // use curl to be independet of [allow_url_fopen] enabled on system
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $strFilename);
-            curl_setopt($curl, CURLOPT_BINARYTRANSFER, true);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             
             $img = curl_exec($curl);
@@ -506,7 +481,7 @@ class VCardContact
      * @param string $strLastName
      * @param string $strFirstName
      */
-    public function setName($strLastName, $strFirstName) 
+    public function setName(string $strLastName, string $strFirstName) 
     {
         $this->strLastName = $strLastName;
         $this->strFirstName = $strFirstName;
@@ -515,7 +490,7 @@ class VCardContact
     /**
      * @param string $strPrefix
      */
-    public function setPrefix($strPrefix) 
+    public function setPrefix(string $strPrefix) 
     {
         $this->strPrefix = $strPrefix;
     }
@@ -523,7 +498,7 @@ class VCardContact
     /**
      * @param string $strSuffix
      */
-    public function setStrSuffix($strSuffix) 
+    public function setStrSuffix(string $strSuffix) 
     {
         $this->strSuffix = $strSuffix;
     }
@@ -531,7 +506,7 @@ class VCardContact
     /**
      * @param string $strNickName
      */
-    public function setNickName($strNickName) 
+    public function setNickName(string $strNickName) 
     {
         $this->strNickName = $strNickName;
     }
@@ -539,7 +514,7 @@ class VCardContact
     /**
      * @param string $strOrganisation
      */
-    public function setOrganisation($strOrganisation) 
+    public function setOrganisation(string $strOrganisation) 
     {
         $this->strOrganisation = $strOrganisation;
     }
@@ -547,7 +522,7 @@ class VCardContact
     /**
      * @param string $strSection
      */
-    public function setSection($strSection) 
+    public function setSection(string $strSection) 
     {
         $this->strSection = $strSection;
     }
@@ -555,7 +530,7 @@ class VCardContact
     /**
      * @param string $strPosition
      */
-    public function setPosition($strPosition) 
+    public function setPosition(string $strPosition) 
     {
         $this->strPosition = $strPosition;
     }
@@ -563,7 +538,7 @@ class VCardContact
     /**
      * @param string $strRole
      */
-    public function setRole($strRole)
+    public function setRole(string $strRole)
     {
         $this->strPosition = $strRole;
     }
@@ -571,7 +546,7 @@ class VCardContact
     /**
      * @param string $strHomepage
      */
-    public function setHomepage($strHomepage) 
+    public function setHomepage(string $strHomepage) 
     {
         $this->strHomepage = $strHomepage;
     }
@@ -579,16 +554,16 @@ class VCardContact
     /**
      * @param string $strNote
      */
-    public function setNote($strNote) 
+    public function setNote(string $strNote) 
     {
         $this->strNote = $strNote;
     }
 
     /**
      * set portrait from data 
-     * @param sring $blobPortrait base64 encoded image
+     * @param string $blobPortrait base64 encoded image
      */
-    public function setPortraitBlob($blobPortrait) 
+    public function setPortraitBlob(string $blobPortrait) 
     {
         $this->blobPortrait = $blobPortrait;
     }
@@ -600,7 +575,7 @@ class VCardContact
      * 
      * @param string $strFilename
      */
-    public function savePortrait($strFilename) 
+    public function savePortrait(string $strFilename) 
     {
         if (strlen($this->blobPortrait) > 0 ) {
             $strType = '';
@@ -627,9 +602,9 @@ class VCardContact
 
     /**
      * number of addresses the contact contains
-     * @return number
+     * @return int
      */
-    public function getAddressCount() 
+    public function getAddressCount() : int
     {
         return count($this->aAddress);
     }
@@ -641,10 +616,10 @@ class VCardContact
      * - first address matches specified type is used (contact may contains multiple addresses of same type)
      * - if VCard::PREF specified, first address in contact used, if no preferred item found
      * 
-     * @param int/string $i     reference to address (int => index, string => type)
+     * @param mixed $i     reference to address (int => index, string => type)
      * @return VCardAddress or null
      */
-    public function getAddress($i) 
+    public function getAddress($i) : ?VCardAddress
     {
         $oAddr = null;
         if (is_numeric($i)) {
@@ -668,9 +643,9 @@ class VCardContact
 
     /**
      * number of phone numbers
-     * @return number
+     * @return int
      */
-    public function getPhoneCount() 
+    public function getPhoneCount() : int
     {
         return count($this->aPhone);
     }
@@ -682,10 +657,10 @@ class VCardContact
      * - first phone matches specified type is used (contact may contains multiple phone numbers of same type)
      * - if VCard::PREF specified, first number in contact used, if no preferred item found
      * 
-     * @param int/string $i     reference to address (int => index, string => type)
-     * @return \ArrayObject or null
+     * @param mixed $i     reference to address (int => index, string => type)
+     * @return array or null
      */
-    public function getPhone($i) 
+    public function getPhone($i) : ?array
     {
         $aPhone = null;
         if (is_numeric($i)) {
@@ -709,18 +684,18 @@ class VCardContact
     
     /**
      * number of EMail addresses
-     * @return number
+     * @return int
      */
-    public function getEMailCount() 
+    public function getEMailCount() : int
     {
         return count($this->aEMail);
     }
     
     /**
      * @param int $i
-     * @return string or null
+     * @return string
      */
-    public function getEMail($i) 
+    public function getEMail(int $i) : string
     {
         $strEMail = '';
         if ($i >= 0 && $i < count($this->aEMail)) {
@@ -731,9 +706,9 @@ class VCardContact
     
     /**
      * number of categories
-     * @return number
+     * @return int
      */
-    public function getCategoriesCount()
+    public function getCategoriesCount() : int
     {
         return count($this->aCategories);
     }
@@ -742,7 +717,7 @@ class VCardContact
      * @param int $i
      * @return string or null
      */
-    public function getCategory($i) 
+    public function getCategory(int $i) : int
     {
         $strCategory = '';
         if ($i >= 0 && $i < count($this->aCategories)) {
@@ -752,10 +727,10 @@ class VCardContact
     }
     
     /**
-     * @param int $i
-     * @return string or null
+     * Return Categories separated by comma.
+     * @return string|null
      */
-    public function getCategories()
+    public function getCategories() : string
     {
         $strCategories = '';
         $strSep = '';
@@ -769,7 +744,7 @@ class VCardContact
     /**
      * @return string
      */
-    public function getName() 
+    public function getName() : string
     {
         return $this->strFirstName . ' ' . $this->strLastName;
     }
@@ -777,7 +752,7 @@ class VCardContact
     /**
      * @return string
      */
-    public function getLastName() 
+    public function getLastName() : string
     {
         return $this->strLastName;
     }
@@ -785,7 +760,7 @@ class VCardContact
     /**
      * @return string
      */
-    public function getFirstName() 
+    public function getFirstName() : string
     {
         return $this->strFirstName;
     }
@@ -793,7 +768,7 @@ class VCardContact
     /**
      * @return string
      */
-    public function getNickName() 
+    public function getNickName() : string
     {
         return $this->strNickName;
     }
@@ -801,7 +776,7 @@ class VCardContact
     /**
      * @return string
      */
-    public function getOrganisation() 
+    public function getOrganisation() : string
     {
         return $this->strOrganisation;
     }
@@ -809,7 +784,7 @@ class VCardContact
     /**
      * @return string
      */
-    public function getPosition()
+    public function getPosition() : string
     {
         return $this->strPosition;
     }
@@ -817,7 +792,7 @@ class VCardContact
     /**
      * @return string
      */
-    public function getRole() 
+    public function getRole() : string
     {
         return $this->strRole;
     }
@@ -825,16 +800,16 @@ class VCardContact
     /**
      * @return string
      */
-    public function getHomepage() 
+    public function getHomepage() : string
     {
         return $this->strHomepage;
     }
     
     /**
      * get date of birth
-     * @return string
+     * @return string   format YYYY-DD-MM
      */
-    public function getDateOfBirth() 
+    public function getDateOfBirth() : string
     {
         return $this->strDateOfBirth;
     }
@@ -842,7 +817,7 @@ class VCardContact
     /**
      * @return string
      */
-    public function getSection() 
+    public function getSection() : string
     {
         return $this->strSection;
     }
@@ -850,7 +825,7 @@ class VCardContact
     /**
      * @return string
      */
-    public function getNote() 
+    public function getNote() : string
     {
         return $this->strNote;
     }
@@ -858,7 +833,7 @@ class VCardContact
     /**
      * @return string
      */
-    public function getLabel() 
+    public function getLabel() : string
     {
         return $this->strLabel;
     }
@@ -866,7 +841,7 @@ class VCardContact
     /**
      * @return string
      */
-    public function getPrefix()
+    public function getPrefix() : string
     {
         return $this->strPrefix;
     }
@@ -874,7 +849,7 @@ class VCardContact
     /**
      * @return string
      */
-    public function getSuffix() 
+    public function getSuffix() : string
     {
         return $this->strSuffix;
     }
@@ -882,7 +857,7 @@ class VCardContact
     /**
      * @return string base64 encoded image
      */
-    public function getPortraitBlob() 
+    public function getPortraitBlob() : string
     {
         return $this->blobPortrait;
     }

@@ -4,7 +4,6 @@
  * 
  * creates vCard Version 3.0 (RFC 2426)
  * imports vCards Version 2.1 and 3.0
- * 
  */
 namespace SKien\VCard;
 
@@ -12,16 +11,15 @@ namespace SKien\VCard;
  * base class to create or read vcard (*.vcf) file
  * file may contain multiple contacts 
  * 
- * ### History
- * ** 2020-02-23 **
- * - initial version.
- * 
- * ** 2020-05-28 **
- * - renamed namespace to fit PSR-4 recommendations for autoloading.
+* history:
+ * date         version
+ * 2020-02-23   initial version.
+ * 2020-05-28   renamed namespace to fit PSR-4 recommendations for autoloading.
+ * 2020-07-22   added missing PHP 7.4 type hints / docBlock changes 
  * 
  * @package SKien-VCard
  * @since 1.0.0
- * @version 1.0.2
+ * @version 1.0.3
  * @author Stefanius <s.kien@online.de>
  * @copyright MIT License - see the LICENSE file for details
  */
@@ -50,17 +48,15 @@ class VCard
     /** no error    */
     const OK    = 0;
 
-    /** encoding for values 
-     *  @var string  */
-    static protected $strEncoding = 'UTF-8';
-    /** data write buffer
-     *  @var \ArrayObject    */
-    protected $aContacts = array();
+    /** @var string  encoding for values    */
+    static protected string $strEncoding = 'UTF-8';
+    /** @var array    data write buffer */
+    protected array $aContacts = array();
 
     /**
      * @return string
      */
-    public static function getEncoding()
+    public static function getEncoding() : string
     {
         return VCard::$strEncoding;
     }
@@ -78,7 +74,7 @@ class VCard
      *     
      * @param string $strEncoding
      */
-    public static function setEncoding($strEncoding)
+    public static function setEncoding(string $strEncoding)
     {
         VCard::$strEncoding = $strEncoding;
     }
@@ -98,7 +94,7 @@ class VCard
      * @param string $strFilename
      * @param bool $bTest   output to browser for internal testing...
      */
-    public function write($strFilename, $bTest = false)
+    public function write(string $strFilename, bool $bTest = false)
     {
         $buffer  = '';
         foreach ($this->aContacts as $oContact) {
@@ -125,7 +121,7 @@ class VCard
      * @param string $strFilename
      * @return int  count of contacts imported
      */
-    public function read($strFilename) 
+    public function read(string $strFilename) : int
     {
         $aLines = @file($strFilename);
         $iLn = 0;
@@ -173,9 +169,9 @@ class VCard
 
     /**
      * number of contacts, vcard containing 
-     * @return number
+     * @return int
      */
-    public function getContactCount() 
+    public function getContactCount()  : int
     {
         return count($this->aContacts);
     }
@@ -184,7 +180,7 @@ class VCard
      * @param int $i
      * @return VCardContact or null
      */
-    public function getContact($i)
+    public function getContact(int $i) : ?VCardContact
     {
         $oContact = null;
         if ($i >= 0 && $i < count($this->aContacts)) {

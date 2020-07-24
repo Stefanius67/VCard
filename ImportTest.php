@@ -3,10 +3,9 @@ use SKien\VCard\VCard;
 require_once 'autoloader.php';
 
 	echo '<!DOCTYPE html>' . PHP_EOL;
-	echo '<html>' . PHP_EOL;
-	echo '<head>' . PHP_EOL;
+	echo '<html lang="de">' . PHP_EOL;
+	echo '<head><title>vCard Importtest</title>' . PHP_EOL;
 	echo '<meta charset="ISO-8859-1">' . PHP_EOL;
-	echo '<title>vCard Importtest</title>' . PHP_EOL;
 	echo '</head>' . PHP_EOL;
 	echo '<body>' . PHP_EOL;
 

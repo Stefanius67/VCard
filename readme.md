@@ -1,6 +1,6 @@
 # PHP vCard Library: Import and export contacts in vCard format
 
-![Latest Stable Version](https://img.shields.io/badge/release-v1.0.1-brightgreen.svg) ![License](https://img.shields.io/packagist/l/gomoob/php-pushwoosh.svg) [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%205.4-8892BF.svg)](https://php.net/)
+![Latest Stable Version](https://img.shields.io/badge/release-v1.0.2-brightgreen.svg) ![License](https://img.shields.io/packagist/l/gomoob/php-pushwoosh.svg) [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.4-8892BF.svg)](https://php.net/)
 ----------
 This package can be used to import and export contact lists in vCard format.
 

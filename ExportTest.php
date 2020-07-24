@@ -28,7 +28,7 @@ require_once 'blobPortrait.php';
 	$oAddress->setCity('Musterstadt');
 	$oAddress->setRegion('Baden-Würtemberg');
 	$oAddress->setCountry('Deutschland');
-	$oAddress->setType('WORK');
+	$oAddress->setType(VCard::WORK);
 	$oContact->addAddress($oAddress, false);
 
 	$oContact->addPhone('01234 98356', VCard::WORK, false);
@@ -46,7 +46,7 @@ require_once 'blobPortrait.php';
 	$oContact->setNote($strNote);
 
 	// insert multiple contacts
-	$oContact->setPortraitBlob($blobPortrait);			// Wiki von Flake
+	$oContact->setPortraitBlob(getBlobPortrait());			// Wiki von Flake
 	$oVCard->addContact($oContact);
 	
 	// change name and portrait

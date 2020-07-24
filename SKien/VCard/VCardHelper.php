@@ -1,24 +1,19 @@
 <?php
 namespace SKien\VCard;
 
-use SKien\VCard\VCard;
-
 /**
  * helper trait containing some methods used by multiple classes in package
  * 
- * ### History
- * ** 2020-02-23 **
- * - initial version.
- * 
- * ** 2020-05-15 **
- * - added html_entity_decode before mask string for export.
- * 
- * ** 2020-05-28 **
- * - renamed namespace to fit PSR-4 recommendations for autoloading.
+* history:
+ * date         version
+ * 2020-02-23   initial version.
+ * 2020-05-15   added html_entity_decode before mask string for export.
+ * 2020-05-28   renamed namespace to fit PSR-4 recommendations for autoloading.
+ * 2020-07-22   added missing PHP 7.4 type hints / docBlock changes 
  * 
  * @package SKien-VCard
  * @since 1.0.0
- * @version 1.0.2
+ * @version 1.0.3
  * @author Stefanius <s.kien@online.de>
  * @copyright MIT License - see the LICENSE file for details
  */
@@ -28,11 +23,12 @@ trait VCardHelper
      * build property to insert in vcard.
      * if line exceeds max length, data will be split into multiple lines
      *  
-     * @param string $strName
-     * @param string $strValue
+     * @param string    $strName
+     * @param string    $strValue
+     * @param bool      $bMask      have value to be masked (default: true)
      * @return string
      */
-    public function buildProperty($strName, $strValue, $bMask=true) 
+    public function buildProperty(string $strName, string $strValue, bool $bMask=true) : string 
     {
         $buffer = '';
         if (!empty($strValue)) {
@@ -59,8 +55,9 @@ trait VCardHelper
     /**
      * mask delimiter and newline if inside of value
      * @param string $strValue
+     * @return string
      */
-    public function maskString($strValue) 
+    public function maskString(string $strValue) : string 
     {
         // decode entities before ';' is replaced !!
         $strValue = html_entity_decode($strValue, ENT_HTML5);
@@ -81,8 +78,9 @@ trait VCardHelper
     /**
      * unmask delimiter and newline
      * @param string $strValue
+     * @return string
      */
-    public function unmaskString($strValue) 
+    public function unmaskString(string $strValue) : string 
     {
         $strValue = str_replace("\\n", "\n", $strValue);
         $strValue = str_replace("\\,", ",", $strValue);
@@ -102,9 +100,9 @@ trait VCardHelper
      * 
      * @param string $strDelim
      * @param string $strValue
-     * @return \ArrayObject:
+     * @return array
      */
-    function explodeMaskedString($strDelim, $strValue)
+    function explodeMaskedString(string $strDelim, string $strValue) : array
     {
         // save masked delimiters, tag unmasked, resore saved and explode on new taged delimiter
         $strSave = "\\" . $strDelim;
@@ -112,17 +110,18 @@ trait VCardHelper
         $strValue = str_replace($strDelim, "\x01", $strValue);
         $strValue = str_replace("\x00", $strSave, $strValue);
 
-        return explode("\x01", $strValue);
+        $a = explode("\x01", $strValue);
+        return $a == false ? [] : $a;
     }   
 
     /**
      * parse image date (base64) to extract type and raw data
      * 
-     * @param base64 string $blobImage
+     * @param string $blobImage
      * @param string $strType
      * @param string $strImage
      */
-    public function parseImageData($blobImage, &$strType, &$strImage)
+    public function parseImageData(string $blobImage, string &$strType, string &$strImage)
     {
         // extract image type from binary data (e.g. data:image/jpg;base64,)
         $i = strpos($blobImage, ',');
@@ -137,9 +136,10 @@ trait VCardHelper
 
     /**
      * parse param string
-     * @param \ArrayObject $aParamsIn
+     * @param array $aParamsIn
+     * @return array
      */
-    protected function parseParams($aParamsIn) 
+    protected function parseParams(array $aParamsIn) : array 
     {
         $aParams = array();
         for ($i = 1; $i < count($aParamsIn); $i++) {
@@ -169,7 +169,7 @@ trait VCardHelper
      * @param string $strValue
      * @return string
      */
-    protected function paramName($strValue)
+    protected function paramName(string $strValue) : string
     {
         static $aNames = array (
             'INLINE'            => 'VALUE',
@@ -231,16 +231,16 @@ trait VCardHelper
     }
     
     /**
-     * create image ressource from encoded string
-     * special processing for BMP cause there si no support in PHP before 7.2
-     *  
-     * @param image string $strImg
+     * Create image ressource from encoded string.
+     * Special processing for BMP cause there is no support in PHP before 7.2.
+     *
+     * @param string    $strImage   base64 encoded image
+     * @param string    $strType    image types supported by imagecreatefromstring
      * @return resource
      */
-    public function imageFromString($strImage, $strType) 
+    public function imageFromString(string $strImage, string $strType) 
     {
         $strImage = base64_decode($strImage);
-        $img = 0;
         if ($strType != 'BMP') {
             $img = imagecreatefromstring($strImage);
         } else {
@@ -252,6 +252,8 @@ trait VCardHelper
             $temp = unpack("H*", $strImage);
             $hex = $temp[1];
             $header = substr($hex, 0, 108);
+            $width = 0;
+            $height = 0;
             if (substr($header, 0, 4) == "424d") {
                 $parts = str_split($header, 2);
                 $width = hexdec($parts[19] . $parts[18]);
