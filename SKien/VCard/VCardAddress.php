@@ -38,6 +38,8 @@ class VCardAddress
     protected string $strRegion = '';
     /** @var string  type (VCard::HOME, VCard::WORK, VCard::POSTAL, VCard::PARCEL)  */
     protected string $strType = '';
+    /** @var bool  preferred address  */
+    protected bool $bPreferred = false;
 
     /**
      * Full address information.
@@ -49,14 +51,12 @@ class VCardAddress
      *  - region
      *  - postal code
      *  - country
-     *
-     * @param bool $bPreferred
      * @return string
      */
-    public function buildFullAddress(bool $bPreferred) : string
+    public function buildFullAddress() : string
     {
         $strField = 'ADR;TYPE=' . $this->strType;
-        if ($bPreferred) {
+        if ($this->bPreferred) {
             $strField .= ',PREF';
         }
 
@@ -74,13 +74,12 @@ class VCardAddress
 
     /**
      * label for address
-     * @param bool $bPreferred
      * @return string
      */
-    public function buildLabel(bool $bPreferred): string
+    public function buildLabel(): string
     {
         $strField = 'LABEL;TYPE=' . $this->strType;
-        if ($bPreferred) {
+        if ($this->bPreferred) {
             $strField .= ',PREF';
         }
 
@@ -183,6 +182,14 @@ class VCardAddress
     }
 
     /**
+     * @param bool $bPreferred
+     */
+    public function setPreferred(bool $bPreferred) : void
+    {
+        $this->bPreferred = $bPreferred;
+    }
+
+    /**
      * @return string $strStr
      */
     public function getStr() : string
@@ -228,5 +235,13 @@ class VCardAddress
     public function getType() : string
     {
         return $this->strType;
+    }
+
+    /**
+     * @return bool $bPreferred
+     */
+    public function getPreferred() : bool
+    {
+        return $this->bPreferred;
     }
 }

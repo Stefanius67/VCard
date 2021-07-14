@@ -98,7 +98,8 @@ class VCard
     {
         $buffer = '';
         foreach ($this->aContacts as $oContact) {
-            $buffer .= $oContact->buildData();
+            $oContactWriter = new VCardContactWriter($oContact);
+            $buffer .= $oContactWriter;
         }
         // vcf-file generation doesn't make sense if some errormessage generated before...
         if (!$bTest && ob_get_contents() == '') {
