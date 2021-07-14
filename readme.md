@@ -1,12 +1,20 @@
 # PHP vCard Library: Import and export contacts in vCard format
 
-![Latest Stable Version](https://img.shields.io/badge/release-v1.0.2-brightgreen.svg) ![License](https://img.shields.io/packagist/l/gomoob/php-pushwoosh.svg) [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.4-8892BF.svg)](https://php.net/)
+ ![Latest Stable Version](https://img.shields.io/badge/release-v1.0.4-brightgreen.svg) 
+ ![License](https://img.shields.io/packagist/l/gomoob/php-pushwoosh.svg) 
+ [![Donate](https://img.shields.io/static/v1?label=donate&message=PayPal&color=orange)](https://www.paypal.me/SKientzler/5.00EUR)
+ [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.4-8892BF.svg)](https://php.net/)
 ----------
+
 This package can be used to import and export contact lists in vCard format.
 
-It can create a new contact list from scratch and export it in vCard format - .vcf - compliant with the version 3.0 of the format specification (RFC 2426).
+It can create a new contact list from scratch and export it in vCard format - .vcf - compliant 
+with the version 3.0 of the format specification (RFC 2426).
 
-The package can also import an existing VCF file and makes it available to the PHP applications as an iterator that returns the details of each contact that was found in the vCard file. The package supports vCard format version 2.1 and 3.0.
+The package can also import an existing VCF file and makes it available to the PHP applications 
+as an iterator that returns the details of each contact that was found in the vCard file. The 
+package supports vCard format version 2.1 and 3.0.
+
 ## Installation   
 You can download the  Latest [release version ](https://www.phpclasses.org/package/11545-PHP-Import-and-export-contact-lists-in-vCard-format.html) from PHPClasses.org
 
