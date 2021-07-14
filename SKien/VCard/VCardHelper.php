@@ -29,7 +29,7 @@ trait VCardHelper
      * @param bool      $bMask      have value to be masked (default: true)
      * @return string
      */
-    public function buildProperty(string $strName, string $strValue, bool $bMask=true) : string
+    public function buildProperty(string $strName, string $strValue, bool $bMask = true) : string
     {
         $buffer = '';
         if (!empty($strValue)) {
@@ -102,7 +102,7 @@ trait VCardHelper
      * @param string $strValue
      * @return array
      */
-    function explodeMaskedString(string $strDelim, string $strValue) : array
+    public function explodeMaskedString(string $strDelim, string $strValue) : array
     {
         // save masked delimiters, tag unmasked, resore saved and explode on new taged delimiter
         $strSave = "\\" . $strDelim;
@@ -141,9 +141,10 @@ trait VCardHelper
     protected function parseParams(array $aParamsIn) : array
     {
         $aParams = array();
-        for ($i = 1; $i < count($aParamsIn); $i++) {
-            $aSplit = explode('=',$aParamsIn[$i]);
-            if (count($aSplit)< 2) {
+        $iCount = count($aParamsIn);
+        for ($i = 1; $i < $iCount; $i++) {
+            $aSplit = explode('=', $aParamsIn[$i]);
+            if (count($aSplit) < 2) {
                 // version 2.1 allows paramvalues without paramname
                 $strName = $this->paramName($aSplit[0]);
                 $strValue = strtoupper($aSplit[0]);
@@ -169,7 +170,7 @@ trait VCardHelper
      */
     protected function paramName(string $strValue) : string
     {
-        static $aNames = array (
+        static $aNames = array(
             'INLINE'            => 'VALUE',
             'URI'               => 'VALUE',
             'URL'               => 'VALUE',
@@ -253,8 +254,8 @@ trait VCardHelper
             $height = 0;
             if (substr($header, 0, 4) == "424d") {
                 $parts = str_split($header, 2);
-                $width = hexdec($parts[19] . $parts[18]);
-                $height = hexdec($parts[23] . $parts[22]);
+                $width = (int) hexdec($parts[19] . $parts[18]);
+                $height = (int) hexdec($parts[23] . $parts[22]);
                 unset($parts);
             }
             $x = 0;
@@ -264,19 +265,21 @@ trait VCardHelper
             $body_size = (strlen($body) / 2);
             $header_size = ($width * $height);
             $usePadding = ($body_size > ($header_size * 3) + 4);
-            for ($i = 0; $i < $body_size; $i+=3) {
+            for ($i = 0; $i < $body_size; $i += 3) {
                 if ($x >= $width) {
-                    if ($usePadding)
+                    if ($usePadding) {
                         $i += $width % 4;
+                    }
                     $x = 0;
                     $y++;
-                    if ($y > $height)
+                    if ($y > $height) {
                         break;
+                    }
                 }
                 $i_pos = $i * 2;
-                $r = hexdec($body[$i_pos + 4] . $body[$i_pos + 5]);
-                $g = hexdec($body[$i_pos + 2] . $body[$i_pos + 3]);
-                $b = hexdec($body[$i_pos] . $body[$i_pos + 1]);
+                $r = (int) hexdec($body[$i_pos + 4] . $body[$i_pos + 5]);
+                $g = (int) hexdec($body[$i_pos + 2] . $body[$i_pos + 3]);
+                $b = (int) hexdec($body[$i_pos] . $body[$i_pos + 1]);
                 $color = imagecolorallocate($img, $r, $g, $b);
                 imagesetpixel($img, $x, $height - $y, $color);
                 $x++;

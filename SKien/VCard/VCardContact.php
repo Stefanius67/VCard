@@ -45,19 +45,19 @@ class VCardContact
     /** @var string  role / profession  */
     protected string $strRole = '';
     /** @var array   array of VCardAddress objects  */
-    protected ?array $aAddress     = null;
+    protected array $aAddress = array();
     /** @var int     index of preferred address */
     protected int $iPrefAddress = 0;
     /** @var array   array of phone numbers */
-    protected ?array $aPhone       = null;
+    protected array $aPhone = array();
     /** @var int     index of preferred phone number    */
     protected int $iPrefPhone = 0;
     /** @var array   array of email addresses   */
-    protected ?array $aEMail       = null;
+    protected array $aEMail = array();
     /** @var int     index of preferred mail address    */
     protected int $iPrefEMail = 0;
     /** @var array   array of categories    */
-    protected ?array $aCategories  = null;
+    protected array $aCategories = array();
     /** @var string  homepage URL   */
     protected string $strHomepage = '';
     /** @var string  date of birth in format YYYY-DD-MM */
@@ -76,10 +76,6 @@ class VCardContact
      */
     public function __construct()
     {
-        $this->aAddress = array();
-        $this->aPhone = array();
-        $this->aEMail = array();
-        $this->aCategories = array();
     }
 
     /**
@@ -94,11 +90,12 @@ class VCardContact
         $buffer .= 'VERSION:3.0' . PHP_EOL;
 
         // name properties
-        $strName  = $this->maskString($this->strLastName) . ';';    // family name
-        $strName .= $this->maskString($this->strFirstName) . ';';   // given name
-        $strName .= ';';                                            // additional name(s)
-        $strName .= $this->maskString($this->strPrefix) . ';';      // honorific prefixes
-        $strName .= $this->maskString($this->strSuffix);            // honorific suffixes
+        // family name; given name; additional name(s); honorific prefixes; honorific sufffixes
+        $strName  = $this->maskString($this->strLastName) . ';';
+        $strName .= $this->maskString($this->strFirstName) . ';';
+        $strName .= ';';
+        $strName .= $this->maskString($this->strPrefix) . ';';
+        $strName .= $this->maskString($this->strSuffix);
 
         $buffer .= $this->buildProperty('N', $strName, false);
         $buffer .= $this->buildProperty('FN', $this->strFirstName . ' ' . $this->strLastName);
@@ -113,15 +110,15 @@ class VCardContact
         $buffer .= $this->buildProperty('ROLE', $this->strRole);
 
         // addresses
-        foreach ($this->aAddress as $i => $oAddress ) {
+        foreach ($this->aAddress as $i => $oAddress) {
             $buffer .= $oAddress->buildFullAddress($i == $this->iPrefAddress);
             $buffer .= $oAddress->buildLabel($i == $this->iPrefAddress);
         }
         // set preferred address also as default postal address for MS
-        $buffer .= $this->buildProperty('X-MS-OL-DEFAULT-POSTAL-ADDRESS', (string)($this->iPrefAddress + 1));
+        $buffer .= $this->buildProperty('X-MS-OL-DEFAULT-POSTAL-ADDRESS', (string) ($this->iPrefAddress + 1));
 
         // phone numbers
-        foreach ($this->aPhone as $i => $aPhone ) {
+        foreach ($this->aPhone as $i => $aPhone) {
             $strName = 'TEL;TYPE=' . $aPhone['strType'];
             if ($i == $this->iPrefPhone) {
                 $strName .= ',PREF';
@@ -130,7 +127,7 @@ class VCardContact
         }
 
         // mailaddresses
-        foreach ($this->aEMail as $i => $strEMail ) {
+        foreach ($this->aEMail as $i => $strEMail) {
             $strName = 'EMAIL;TYPE=INTERNET';
             if ($i == $this->iPrefEMail) {
                 $strName .= ',PREF';
@@ -143,10 +140,10 @@ class VCardContact
         // personal data
         $buffer .= $this->buildProperty('BDAY', $this->strDateOfBirth);
         if ($this->iGender > 0) {
-            $buffer .= $this->buildProperty('X-WAB-GENDER', (string)$this->iGender);
+            $buffer .= $this->buildProperty('X-WAB-GENDER', (string) $this->iGender);
         }
         // categories
-        if (count($this->aCategories) > 0 ) {
+        if (count($this->aCategories) > 0) {
             $strSep = '';
             $strValue = '';
             foreach ($this->aCategories as $strCategory) {
@@ -160,12 +157,12 @@ class VCardContact
         $buffer .= $this->buildProperty('NOTE', $this->strNote);
 
         // photo
-        if ( strlen($this->blobPortrait) > 0) {
+        if (strlen($this->blobPortrait) > 0) {
             // extract image type from binary data
             $strType = '';
             $strImage = '';
             $this->parseImageData($this->blobPortrait, $strType, $strImage);
-            if (strlen($strType) > 0 && strlen($strImage) > 0 ) {
+            if (strlen($strType) > 0 && strlen($strImage) > 0) {
                 $strName = 'PHOTO;TYPE=' . $strType . ';ENCODING=B';
                 $buffer .= $this->buildProperty($strName, $strImage, false);
                 $buffer .= PHP_EOL; // even though in vcard 3.0 spec blank line after binary value no longer is requires, MS Outlook need it...
@@ -245,15 +242,15 @@ class VCardContact
     protected function parseName(string $strValue, array $aParams) : void
     {
         $aSplit = $this->explodeMaskedString(';', $strValue);
-        $this->strLastName = $this->unmaskString($aSplit[0]);       // family name
+        $this->strLastName = $this->unmaskString($aSplit[0]); // family name
         if (isset($aSplit[1])) {
-            $this->strFirstName = $this->unmaskString($aSplit[1]);  // given name
+            $this->strFirstName = $this->unmaskString($aSplit[1]); // given name
         }
         if (isset($aSplit[3])) {
-            $this->strPrefix = $this->unmaskString($aSplit[3]);     // honorific prefixes
+            $this->strPrefix = $this->unmaskString($aSplit[3]); // honorific prefixes
         }
         if (isset($aSplit[4])) {
-            $this->strSuffix = $this->unmaskString($aSplit[4]);     // honorific suffixes
+            $this->strSuffix = $this->unmaskString($aSplit[4]); // honorific suffixes
         }
     }
 
@@ -439,7 +436,7 @@ class VCardContact
     {
         if (filter_var($strFilename, FILTER_VALIDATE_URL)) {
             // get type from extension
-            $strType = strtolower(pathinfo($strFilename, PATHINFO_EXTENSION));
+            $strType = strtolower((string)pathinfo($strFilename, PATHINFO_EXTENSION));
             $this->blobPortrait = 'data:image/' . $strType . ';base64,';
 
             // use curl to be independet of [allow_url_fopen] enabled on system
@@ -450,9 +447,10 @@ class VCardContact
             $img = curl_exec($curl);
             curl_close($curl);
 
-            $this->blobPortrait .= base64_encode($img);
-
-        } elseif(file_exists($strFilename)) {
+            if (is_string($img)) {
+                $this->blobPortrait .= base64_encode($img);
+            }
+        } elseif (file_exists($strFilename)) {
             switch (exif_imagetype($strFilename)) {
                 case IMAGETYPE_JPEG:
                     $this->blobPortrait = 'data:image/jpg;base64,';
@@ -575,15 +573,15 @@ class VCardContact
      */
     public function savePortrait(string $strFilename) : void
     {
-        if (strlen($this->blobPortrait) > 0 ) {
+        if (strlen($this->blobPortrait) > 0) {
             $strType = '';
             $strImage = '';
             $this->parseImageData($this->blobPortrait, $strType, $strImage);
-            if (strlen($strType) > 0 && strlen($strImage) > 0 ) {
+            if (strlen($strType) > 0 && strlen($strImage) > 0) {
                 $img = $this->imageFromString($strImage, $strType);
                 imagealphablending($img, true);
                 imagesavealpha($img, true);
-                $strExt = strtolower(pathinfo($strFilename, PATHINFO_EXTENSION));
+                $strExt = strtolower((string)pathinfo($strFilename, PATHINFO_EXTENSION));
                 if (strlen($strExt) == 0) {
                     $strExt = strtolower($strType);
                     $strFilename .= '.' . $strExt;
@@ -633,7 +631,7 @@ class VCardContact
                 $oAddr = $this->aAddress[$i];
             }
         } else {
-            foreach ($this->aAddress as $oAddr )    {
+            foreach ($this->aAddress as $oAddr)    {
                 if (strpos($oAddr->getType(), $i) !== false) {
                     return $oAddr;
                 }
@@ -673,7 +671,7 @@ class VCardContact
                 $aPhone = $this->aPhone[$i];
             }
         } else {
-            foreach ($this->aPhone as $aPhone ) {
+            foreach ($this->aPhone as $aPhone) {
                 if (strpos($aPhone['strType'], $i) !== false) {
                     return $aPhone;
                 }

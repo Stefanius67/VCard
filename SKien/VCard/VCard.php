@@ -45,10 +45,10 @@ class VCard
     const PARCEL    = 'PARCEL';
 
     /** max. length of line in vcard - file    */
-    const MAX_LINE_LENGTH   = 75;
+    const MAX_LINE_LENGTH = 75;
 
     /** no error    */
-    const OK    = 0;
+    const OK = 0;
 
     /** @var string  encoding for values    */
     static protected string $strEncoding = 'UTF-8';
@@ -96,16 +96,16 @@ class VCard
      */
     public function write(string $strFilename, bool $bTest = false) : void
     {
-        $buffer  = '';
+        $buffer = '';
         foreach ($this->aContacts as $oContact) {
             $buffer .= $oContact->buildData();
         }
         // vcf-file generation doesn't make sense if some errormessage generated before...
         if (!$bTest && ob_get_contents() == '') {
-            header( 'Content-Type: text/x-vCard; name=' . $strFilename );
-            header( 'Content-Length: ' . strlen($buffer) );
-            header( 'Connection: close' );
-            header( 'Content-Disposition: attachment; filename=' . $strFilename );
+            header( 'Content-Type: text/x-vCard; name=' . $strFilename);
+            header( 'Content-Length: ' . strlen($buffer));
+            header( 'Connection: close');
+            header( 'Content-Disposition: attachment; filename=' . $strFilename);
         } else {
             // output for test or in case of errors
             $buffer = str_replace(PHP_EOL, '<br>', $buffer);
@@ -123,6 +123,9 @@ class VCard
     public function read(string $strFilename) : int
     {
         $aLines = @file($strFilename);
+        if ($aLines === false) {
+            return 0;
+        }
         $iLn = 0;
         $oContact = null;
         while ($iLn < count($aLines)) {
@@ -132,7 +135,7 @@ class VCard
             // if line ends with '=', go on next line (ignore ending '=' sign!)
             if (substr($strLine, -1) == '=') {
                 while ($iLn < count($aLines) && substr($strLine, -1) == '=') {
-                    $strLine = rtrim($strLine, '=');  // remove ending '='
+                    $strLine = rtrim($strLine, '='); // remove ending '='
                     if (strlen(trim($aLines[$iLn])) == 0) {
                         break;
                     }
