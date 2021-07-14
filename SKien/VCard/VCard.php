@@ -102,10 +102,10 @@ class VCard
         }
         // vcf-file generation doesn't make sense if some errormessage generated before...
         if (!$bTest && ob_get_contents() == '') {
-            header( 'Content-Type: text/x-vCard; name=' . $strFilename);
-            header( 'Content-Length: ' . strlen($buffer));
-            header( 'Connection: close');
-            header( 'Content-Disposition: attachment; filename=' . $strFilename);
+            header('Content-Type: text/x-vCard; name=' . $strFilename);
+            header('Content-Length: ' . strlen($buffer));
+            header('Connection: close');
+            header('Content-Disposition: attachment; filename=' . $strFilename);
         } else {
             // output for test or in case of errors
             $buffer = str_replace(PHP_EOL, '<br>', $buffer);
