@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace SKien\VCard;
 
 /**
- * Helper class that bulds the string buffer for one contact in the VCard format.
+ * Helper class that builds the string buffer for one contact in the VCard format.
  *
  * @package SKien-VCard
  * @since 1.0.4
@@ -22,7 +22,7 @@ class VCardContactWriter
     protected string $buffer = '';
 
     /**
-     * Create a contactbuilder object.
+     * Create a contact writer object.
      * @param VCardContact $oContact    the contact to build
      */
     function __construct(VCardContact $oContact)

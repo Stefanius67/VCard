@@ -73,162 +73,6 @@ class VCardContact
     }
 
     /**
-     * Add property from import file.
-     * @param string $strName
-     * @param array $aParams
-     * @param string $strValue
-     */
-    public function addProperty(string $strName, array $aParams, string $strValue) : void
-    {
-        // table to parse property depending on propertyname.
-        // value have to be either name of method with signature
-        //
-        //      methodname( string strValue, array aParams )
-        //
-        // or
-        //      propertyname  ( => unmasked value will be assigned to property)
-        //
-        $aMethodOrProperty = array(
-            'N'             => 'parseName',
-            'ADR'           => 'parseAdr',
-            'TEL'           => 'parseTel',
-            'EMAIL'         => 'parseEMail',
-            'CATEGORIES'    => 'parseCategories',
-            'CATEGORY'      => 'parseCategories',
-            'ORG'           => 'parseOrg',
-            'PHOTO'         => 'parsePhoto',
-            'NICKNAME'      => 'strNickName',
-            'TITLE'         => 'strPosition',
-            'ROLE'          => 'strRole',
-            'URL'           => 'strHomepage',
-            'NOTE'          => 'strNote',
-            'LABEL'         => 'strLabel',
-            'BDAY'          => 'strDateOfBirth',
-            'X-WAB-GENDER'  => 'iGender'
-        );
-
-        // supported only by vcard version 2.1
-        if (isset($aParams['ENCODING']) && $aParams['ENCODING'] == 'QUOTED-PRINTABLE') {
-            $strValue = quoted_printable_decode($strValue);
-        }
-
-        if (isset($aMethodOrProperty[$strName])) {
-            $strPtr = $aMethodOrProperty[$strName];
-            if (method_exists($this, $strPtr)) {
-                // call method
-                call_user_func_array(array($this, $strPtr), array($strValue, $aParams));
-            } elseif (property_exists($this, $strPtr)) {
-                // assign unmasket vsalue to property
-                $this->$strPtr = $this->unmaskString($strValue);
-            }
-        }
-    }
-
-    /**
-     * Explode string into name components.
-     * Order of the components separated by ';':
-     *  - family name
-     *  - given name
-     *  - additional name(s) (not supported)
-     *  - honorific prefixes
-     *  - honorific suffixes
-     *  delimitered by semicolon (be aware of masked delimiters)
-     * @param string $strValue
-     * @param array $aParams
-     */
-    protected function parseName(string $strValue, array $aParams) : void
-    {
-        $aSplit = $this->explodeMaskedString(';', $strValue);
-        $this->strLastName = $this->unmaskString($aSplit[0]); // family name
-        if (isset($aSplit[1])) {
-            $this->strFirstName = $this->unmaskString($aSplit[1]); // given name
-        }
-        if (isset($aSplit[3])) {
-            $this->strPrefix = $this->unmaskString($aSplit[3]); // honorific prefixes
-        }
-        if (isset($aSplit[4])) {
-            $this->strSuffix = $this->unmaskString($aSplit[4]); // honorific suffixes
-        }
-    }
-
-    /**
-     * @param string $strValue
-     * @param array $aParams
-     * @see VCardAddress::parseFullAddress()
-     */
-    protected function parseAdr(string $strValue, array $aParams) : void
-    {
-        $oAdr = new VCardAddress();
-        $oAdr->parseFullAddress($strValue, $aParams);
-        $this->aAddress[] = $oAdr;
-    }
-
-    /**
-     * Unmask value and add with typeinfo to phone list.
-     * @param string $strValue
-     * @param array $aParams
-     */
-    protected function parseTel(string $strValue, array $aParams) : void
-    {
-        $strValue = $this->unmaskString($strValue);
-        $this->addPhone($strValue, $aParams['TYPE'], strpos($aParams['TYPE'], 'PREF') !== false);
-    }
-
-    /**
-     * Unmask value and add to email list.
-     * @param string $strValue
-     * @param array $aParams
-     */
-    protected function parseEMail(string $strValue, array $aParams) : void
-    {
-        $strValue = $this->unmaskString($strValue);
-        $this->addEMail($strValue, strpos($aParams['TYPE'], 'PREF') !== false);
-    }
-
-    /**
-     * Split into company and section.
-     * @param string $strValue
-     * @param array $aParams
-     */
-    protected function parseOrg(string $strValue, array $aParams) : void
-    {
-        $aSplit = $this->explodeMaskedString(';', $strValue);
-        $this->strOrganisation = $this->unmaskString($aSplit[0]);
-        if (isset($aSplit[1])) {
-            $this->strSection = $this->unmaskString($aSplit[1]);
-        }
-    }
-
-    /**
-     * Split comma separated categories.
-     * @param string $strValue
-     * @param array $aParams
-     */
-    protected function parseCategories(string $strValue, array $aParams) : void
-    {
-        $aSplit = $this->explodeMaskedString(',', $strValue);
-        foreach ($aSplit as $strCategory) {
-            $this->addCategory($this->unmaskString($strCategory));
-        }
-    }
-
-    /**
-     * @param string $strValue
-     * @param array $aParams
-     */
-    protected function parsePhoto(string $strValue, array $aParams) : void
-    {
-        $strEncoding = isset($aParams['ENCODING']) ? $aParams['ENCODING'] : '';
-        if ($strEncoding == 'B' || $strEncoding == 'BASE64') {
-            $strType = strtolower($aParams['TYPE']);
-            $this->blobPortrait = 'data:image/' . $strType . ';base64,' . $strValue;
-        } else {
-            // assuming URL value... e.g. export from google contacts
-            $this->setPortraitFile($strValue);
-        }
-    }
-
-    /**
      * Add address.
      * Only one address should be marked as preferred. In case of multiple addresses
      * specified as preferred, last call counts!
@@ -308,10 +152,10 @@ class VCardContact
     public function setGender(string $strGender) : void
     {
         $chGender = strtolower(substr($strGender, 0, 1));
-        if (in_array($chGender, array('w', 'f'))) {
+        if (in_array($chGender, array('w', 'f', '1'))) {
             // weibl., female
             $this->iGender = 1;
-        } elseif ($chGender == 'm') {
+        } elseif (in_array($chGender, array('m', '2'))) {
             // männl., male
             $this->iGender = 2;
         }
@@ -384,7 +228,7 @@ class VCardContact
     /**
      * @param string $strSuffix
      */
-    public function setStrSuffix(string $strSuffix) : void
+    public function setSuffix(string $strSuffix) : void
     {
         $this->strSuffix = $strSuffix;
     }

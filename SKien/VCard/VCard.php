@@ -129,6 +129,7 @@ class VCard
         }
         $iLn = 0;
         $oContact = null;
+        $oReader = null;
         while ($iLn < count($aLines)) {
             $strLine = rtrim($aLines[$iLn++], "\r\n");
 
@@ -153,17 +154,19 @@ class VCard
 
             if (strtoupper($strLine) == 'BEGIN:VCARD') {
                 $oContact = new VCardContact();
+                $oReader = new VCardContactReader($oContact);
             } elseif (strtoupper($strLine) == 'END:VCARD') {
                 $this->aContacts[] = $oContact;
                 $oContact = null;
-            } elseif ($oContact) {
+                $oReader = null;
+            } elseif ($oReader) {
                 // split property name/params from value
                 $aSplit = explode(':', $strLine, 2);
                 if (count($aSplit) == 2) {
                     $aNameParams = explode(';', $aSplit[0]);
                     $strName = $aNameParams[0];
                     $aParams = $this->parseParams($aNameParams);
-                    $oContact->addProperty($strName, $aParams, $aSplit[1]);
+                    $oReader->addProperty($strName, $aParams, $aSplit[1]);
                 }
             }
         }
