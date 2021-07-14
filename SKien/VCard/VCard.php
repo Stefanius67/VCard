@@ -1,22 +1,24 @@
 <?php
+declare(strict_types=1);
+
 /**
  * package to create or read vCard (*.vcf) file
- * 
+ *
  * creates vCard Version 3.0 (RFC 2426)
  * imports vCards Version 2.1 and 3.0
  */
 namespace SKien\VCard;
 
 /**
- * base class to create or read vcard (*.vcf) file
- * file may contain multiple contacts 
- * 
-* history:
+ * Base class to create or read vcard (*.vcf) file
+ * file may contain multiple contacts
+ *
+ * history:
  * date         version
  * 2020-02-23   initial version.
  * 2020-05-28   renamed namespace to fit PSR-4 recommendations for autoloading.
- * 2020-07-22   added missing PHP 7.4 type hints / docBlock changes 
- * 
+ * 2020-07-22   added missing PHP 7.4 type hints / docBlock changes.
+ *
  * @package SKien-VCard
  * @since 1.0.0
  * @version 1.0.3
@@ -26,7 +28,7 @@ namespace SKien\VCard;
 class VCard
 {
     use VCardHelper;
-    
+
     /** preferrred entry     */
     const PREF      = 'PREF';
     /** information for work     */
@@ -42,9 +44,9 @@ class VCard
     /** parcel address for delivery      */
     const PARCEL    = 'PARCEL';
 
-    /** max. length of line in vcard - file    */   
+    /** max. length of line in vcard - file    */
     const MAX_LINE_LENGTH   = 75;
-    
+
     /** no error    */
     const OK    = 0;
 
@@ -62,45 +64,43 @@ class VCard
     }
 
     /**
-     * set the encoding of the file.
-     * for export:
-     * - always use UTF-8 (default). 
-     *   only exception i found so far is MS-Outlook - it comes in trouble with german 
+     * Set the encoding of the file.
+     * For export:
+     * - always use UTF-8 (default).
+     *   only exception i found so far is MS-Outlook - it comes in trouble with german
      *   umlauts, so use 'Windwos-1252' instead.
      *   please send note to s.kien@online.de if you found any further exceptions...
-     *   
-     * - for import
-     *   feel free to use your preferred charset (may depends on configuration of your system)
-     *     
+     *
+     * For import:
+     * -  feel free to use your preferred charset (may depends on configuration of your system)
      * @param string $strEncoding
      */
-    public static function setEncoding(string $strEncoding)
+    public static function setEncoding(string $strEncoding) : void
     {
         VCard::$strEncoding = $strEncoding;
     }
 
     /**
-     * add contact to vcard file
+     * Add contact to vcard file.
      * @param VCardContact $oContact
      */
-    public function addContact(VCardContact $oContact)
+    public function addContact(VCardContact $oContact) : void
     {
         $this->aContacts[] = clone $oContact;
     }
-    
+
     /**
-     * write vcard to file
-     * 
+     * Write vcard to file.
      * @param string $strFilename
      * @param bool $bTest   output to browser for internal testing...
      */
-    public function write(string $strFilename, bool $bTest = false)
+    public function write(string $strFilename, bool $bTest = false) : void
     {
         $buffer  = '';
         foreach ($this->aContacts as $oContact) {
             $buffer .= $oContact->buildData();
         }
-        // vcf-file generation doesn't make sense if some errormessage generated before... 
+        // vcf-file generation doesn't make sense if some errormessage generated before...
         if (!$bTest && ob_get_contents() == '') {
             header( 'Content-Type: text/x-vCard; name=' . $strFilename );
             header( 'Content-Length: ' . strlen($buffer) );
@@ -111,13 +111,12 @@ class VCard
             $buffer = str_replace(PHP_EOL, '<br>', $buffer);
             echo  'Filename: ' . $strFilename . '<br><br>';
         }
-        
+
         echo $buffer;
     }
-    
+
     /**
-     * read vcard - file
-     * 
+     * Read vcard - file.
      * @param string $strFilename
      * @return int  count of contacts imported
      */
@@ -128,7 +127,7 @@ class VCard
         $oContact = null;
         while ($iLn < count($aLines)) {
             $strLine = rtrim($aLines[$iLn++], "\r\n");
-                
+
             // QUOTED-PRINTABLE multiline values: (supported by vcard version 2.1 only)
             // if line ends with '=', go on next line (ignore ending '=' sign!)
             if (substr($strLine, -1) == '=') {
@@ -147,7 +146,7 @@ class VCard
                 }
                 $strLine .= rtrim(substr($aLines[$iLn++], 1), "\r\n"); // ignore leading blank
             }
-            
+
             if (strtoupper($strLine) == 'BEGIN:VCARD') {
                 $oContact = new VCardContact();
             } elseif (strtoupper($strLine) == 'END:VCARD') {
@@ -168,17 +167,18 @@ class VCard
     }
 
     /**
-     * number of contacts, vcard containing 
+     * Number of contacts the vcard containing.
      * @return int
      */
     public function getContactCount()  : int
     {
         return count($this->aContacts);
     }
-    
+
     /**
+     * Get requested contact.
      * @param int $i
-     * @return VCardContact or null
+     * @return VCardContact|null
      */
     public function getContact(int $i) : ?VCardContact
     {
@@ -186,6 +186,6 @@ class VCard
         if ($i >= 0 && $i < count($this->aContacts)) {
             $oContact = $this->aContacts[$i];
         }
-        return $oContact; 
+        return $oContact;
     }
 }

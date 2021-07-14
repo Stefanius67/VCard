@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 use SKien\VCard\VCard;
 require_once 'autoloader.php';
 
@@ -18,10 +20,10 @@ require_once 'autoloader.php';
 	if (isset($_REQUEST['encoding'])) {
 		$strEncoding = $_REQUEST['encoding'];
 	}
-	
-	
+
+
 	VCard::setEncoding($strEncoding);
-	
+
 	// create object and read file
 	$oVCard = new VCard();
 	$iCC = $oVCard->read($strFilename);
@@ -34,7 +36,7 @@ require_once 'autoloader.php';
 			echo '<img style="float: left; margin: 0px 20px;" src="' . $strPortraitBlob . '">' . PHP_EOL;
 			// just save image as blob in db table ...
 			// ... or may create file on server (it's on you to set appropriate path and filename)
-			$oContact->savePortrait('myimage.jpg');
+			$oContact->savePortrait('myimage' . ($i + 1));
 		}
 		echo $oContact->getPrefix() . '<br/>' . PHP_EOL;
 		echo $oContact->getLastName() . ', ' . $oContact->getFirstName() . '<br/>' . PHP_EOL;
@@ -53,7 +55,7 @@ require_once 'autoloader.php';
 			echo '	' . $oAddress->getRegion() . ' ' . $oAddress->getCountry() . '<br>' . PHP_EOL;
 			echo '</div>' . PHP_EOL;
 		}
-		
+
 		// test for direct access via type
 		echo '<div style="clear: both;"><br/>' . PHP_EOL;
 		$oAddress = $oContact->getAddress(VCard::WORK);
@@ -64,7 +66,7 @@ require_once 'autoloader.php';
 			echo '	' . $oAddress->getPostcode() . ' ' . $oAddress->getCity() . '<br>' . PHP_EOL;
 			echo '	' . $oAddress->getRegion() . ' ' . $oAddress->getCountry() . '<br>' . PHP_EOL;
 			echo '</div>' . PHP_EOL;
-		}		
+		}
 		$oAddress = $oContact->getAddress(VCard::HOME);
 		if ($oAddress) {
 			echo '<div style="width: 50%; float: left;">' . PHP_EOL;
@@ -92,7 +94,7 @@ require_once 'autoloader.php';
 			echo 'Mail' . ($j+1) . ': ' . $oContact->getEMail($j) . '<br>' . PHP_EOL;
 		}
 		echo '<br/>' . PHP_EOL;
-		
+
 		$strNote = $oContact->getNote();
 		if (strlen($strNote) > 0 )
 		{
@@ -101,6 +103,6 @@ require_once 'autoloader.php';
 			echo '<br/>' . PHP_EOL;
 		}
 	}
-	
+
 	echo '</body>' . PHP_EOL;
 	echo '</html>' . PHP_EOL;

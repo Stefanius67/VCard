@@ -1,16 +1,18 @@
 <?php
+declare(strict_types=1);
+
 namespace SKien\VCard;
 
 /**
- * helper trait containing some methods used by multiple classes in package
- * 
-* history:
+ * Helper trait containing some methods used by multiple classes in package
+ *
+ * history:
  * date         version
  * 2020-02-23   initial version.
  * 2020-05-15   added html_entity_decode before mask string for export.
  * 2020-05-28   renamed namespace to fit PSR-4 recommendations for autoloading.
- * 2020-07-22   added missing PHP 7.4 type hints / docBlock changes 
- * 
+ * 2020-07-22   added missing PHP 7.4 type hints / docBlock changes
+ *
  * @package SKien-VCard
  * @since 1.0.0
  * @version 1.0.3
@@ -20,15 +22,14 @@ namespace SKien\VCard;
 trait VCardHelper
 {
     /**
-     * build property to insert in vcard.
-     * if line exceeds max length, data will be split into multiple lines
-     *  
+     * Build property to insert in vcard.
+     * If line exceeds max length, data will be split into multiple lines
      * @param string    $strName
      * @param string    $strValue
      * @param bool      $bMask      have value to be masked (default: true)
      * @return string
      */
-    public function buildProperty(string $strName, string $strValue, bool $bMask=true) : string 
+    public function buildProperty(string $strName, string $strValue, bool $bMask=true) : string
     {
         $buffer = '';
         if (!empty($strValue)) {
@@ -53,11 +54,11 @@ trait VCardHelper
     }
 
     /**
-     * mask delimiter and newline if inside of value
+     * Mask delimiter and newline if inside of value.
      * @param string $strValue
      * @return string
      */
-    public function maskString(string $strValue) : string 
+    public function maskString(string $strValue) : string
     {
         // decode entities before ';' is replaced !!
         $strValue = html_entity_decode($strValue, ENT_HTML5);
@@ -66,21 +67,21 @@ trait VCardHelper
         $strValue = str_replace("\n", "\\n", $strValue);
         $strValue = str_replace(",", "\\,", $strValue);
         $strValue = str_replace(";", "\\;", $strValue);
-        
+
         $strFrom = mb_detect_encoding($strValue);
         if ($strFrom !== false && $strFrom != VCard::getEncoding()) {
             $strValue = iconv($strFrom, VCard::getEncoding(), $strValue);
         }
-        
+
         return $strValue;
     }
 
     /**
-     * unmask delimiter and newline
+     * Unmask delimiter and newline.
      * @param string $strValue
      * @return string
      */
-    public function unmaskString(string $strValue) : string 
+    public function unmaskString(string $strValue) : string
     {
         $strValue = str_replace("\\n", "\n", $strValue);
         $strValue = str_replace("\\,", ",", $strValue);
@@ -93,11 +94,10 @@ trait VCardHelper
 
         return $strValue;
     }
-    
+
     /**
-     * explode a masked string.
+     * Explode a masked string.
      * to ignore masked delimiters belonging to value
-     * 
      * @param string $strDelim
      * @param string $strValue
      * @return array
@@ -112,16 +112,15 @@ trait VCardHelper
 
         $a = explode("\x01", $strValue);
         return $a == false ? [] : $a;
-    }   
+    }
 
     /**
-     * parse image date (base64) to extract type and raw data
-     * 
+     * Parse image date (base64) to extract type and raw data.
      * @param string $blobImage
      * @param string $strType
      * @param string $strImage
      */
-    public function parseImageData(string $blobImage, string &$strType, string &$strImage)
+    public function parseImageData(string $blobImage, string &$strType, string &$strImage) : void
     {
         // extract image type from binary data (e.g. data:image/jpg;base64,)
         $i = strpos($blobImage, ',');
@@ -135,11 +134,11 @@ trait VCardHelper
     }
 
     /**
-     * parse param string
+     * Parse param string
      * @param array $aParamsIn
      * @return array
      */
-    protected function parseParams(array $aParamsIn) : array 
+    protected function parseParams(array $aParamsIn) : array
     {
         $aParams = array();
         for ($i = 1; $i < count($aParamsIn); $i++) {
@@ -153,19 +152,18 @@ trait VCardHelper
                 $strValue = strtoupper($aSplit[1]);
             }
             if (isset($aParams[$strName])) {
-                $aParams[$strName] .= ',' . $strValue; 
+                $aParams[$strName] .= ',' . $strValue;
             } else {
                 $aParams[$strName] = $strValue;
             }
         }
         return $aParams;
     }
-    
+
     /**
-     * find paramname to paramvalue.
+     * Find paramname to paramvalue.
      * vcard version 2.1 allows params without name of the param
      * e.g.    TEL;HOME: short for TEL;TYPE=HOME:
-     * 
      * @param string $strValue
      * @return string
      */
@@ -222,29 +220,28 @@ trait VCardHelper
             'WAVE'              => 'TYPE',
             'PCM'               => 'TYPE'
         );
-    
+
         $strName = 'UNKNOWN';
         if (isset($aNames[$strValue])) {
             $strName = $aNames[$strValue];
         }
         return $strName;
     }
-    
+
     /**
      * Create image ressource from encoded string.
      * Special processing for BMP cause there is no support in PHP before 7.2.
-     *
      * @param string    $strImage   base64 encoded image
      * @param string    $strType    image types supported by imagecreatefromstring
-     * @return resource
+     * @return mixed    image resource
      */
-    public function imageFromString(string $strImage, string $strType) 
+    public function imageFromString(string $strImage, string $strType)
     {
         $strImage = base64_decode($strImage);
         if ($strType != 'BMP') {
             $img = imagecreatefromstring($strImage);
         } else {
-            // imagecreatefromstring don't supports BMP 
+            // imagecreatefromstring don't supports BMP
             // ...imagecreatefrombmp() is available from PHP version >= 7.2!
             //
             // thanks to Tomáš Grasl for following code from
@@ -286,5 +283,5 @@ trait VCardHelper
             }
         }
         return $img;
-    }   
+    }
 }
