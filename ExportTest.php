@@ -13,6 +13,10 @@ require_once 'blobPortrait.php';
 	$oContact = new VCardContact();
 	$oContact->setName('von Flake', 'Wiki');
 	$oContact->setOrganisation('Company 4711');
+	$oContact->addHomepage('www.firstpage.de');
+	$oContact->addHomepage('www.secondpage.uk');
+
+	$oContact->setDateOfBirth('1982-07-26');
 
 	$oAddress = new VCardAddress();
 	$oAddress->setStr('Bärenweg. 4');
@@ -54,14 +58,17 @@ require_once 'blobPortrait.php';
 	// change name and portrait ... all other properties remains valid!
 	$oContact->setName('von Flake', 'Ilvy');
 	$oContact->setPortraitFile('images/sample2.png');	// Ilvy	von Flake
+	$oContact->setDateOfBirth(477270000);
+
 	$oVCard->addContact($oContact);
 
 	// change name again and add some additional info....
 	$oContact->setName('von Flake', 'Halvar');
 	$oContact->setPrefix('Mr.');
-	$oContact->setStrSuffix('Häuptling');
+	$oContact->setSuffix('Häuptling');
 	$oContact->setPortraitFile('images/sample3.bmp');	// Halvar von Flake
+	$oContact->setDateOfBirth(new \DateTime('1964-04-19'));
 	$oVCard->addContact($oContact);
 
 	// and write to file
-	$oVCard->write('test.vcf', false);
+	$oVCard->write('test.vcf', isset($_GET['test']));

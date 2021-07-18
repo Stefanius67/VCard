@@ -6,7 +6,7 @@ declare(strict_types=1);
 <html lang="de">
 <head>
 <meta charset="ISO-8859-1">
-<title>vCard Importtest</title>
+<title>vCard Importtest Selection</title>
 </head>
 <body>
 	<form action="ImportTest.php" target="_blank" enctype="multipart/form-data" method="post">

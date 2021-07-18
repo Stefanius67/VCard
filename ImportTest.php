@@ -2,11 +2,12 @@
 declare(strict_types=1);
 
 use SKien\VCard\VCard;
+use SKien\VCard\VCardContact;
 require_once 'autoloader.php';
 
 	echo '<!DOCTYPE html>' . PHP_EOL;
 	echo '<html lang="de">' . PHP_EOL;
-	echo '<head><title>vCard Importtest</title>' . PHP_EOL;
+	echo '<head><title>vCard Importtest Display</title>' . PHP_EOL;
 	echo '<meta charset="ISO-8859-1">' . PHP_EOL;
 	echo '</head>' . PHP_EOL;
 	echo '<body>' . PHP_EOL;
@@ -33,7 +34,7 @@ require_once 'autoloader.php';
 		echo '<h1>' . $oContact->getName() . '</h1>' . PHP_EOL;
 		$strPortraitBlob = $oContact->getPortraitBlob();
 		if (strlen($strPortraitBlob) > 0 ) {
-			echo '<img style="float: left; margin: 0px 20px;" src="' . $strPortraitBlob . '">' . PHP_EOL;
+			echo '<img style="float: right; margin: 0px 20px;" src="' . $strPortraitBlob . '">' . PHP_EOL;
 			// just save image as blob in db table ...
 			// ... or may create file on server (it's on you to set appropriate path and filename)
 			$oContact->savePortrait('myimage' . ($i + 1));
@@ -41,8 +42,15 @@ require_once 'autoloader.php';
 		echo $oContact->getPrefix() . '<br/>' . PHP_EOL;
 		echo $oContact->getLastName() . ', ' . $oContact->getFirstName() . '<br/>' . PHP_EOL;
 		echo 'Nickname: ' . $oContact->getNickName() . '<br/>' . PHP_EOL;
-		echo 'Birthday: ' . $oContact->getDateOfBirth() . '<br/><br/>' . PHP_EOL;
-		echo 'Company: ' . $oContact->getOrganisation() . '<br/><br/><br/>' . PHP_EOL;
+		// echo 'Birthday: ' . $oContact->getDateOfBirth(VCardContact::DT_STRING, 'd.m.Y') . '<br/><br/>' . PHP_EOL;
+		$dtdoB = $oContact->getDateOfBirth(VCardContact::DT_OBJECT);
+		echo 'Birthday: ' . ($dtdoB !== null ? $dtdoB->format('d.m.Y') : '') . '<br/><br/>' . PHP_EOL;
+		echo 'Company: ' . $oContact->getOrganisation() . '<br/><br/>' . PHP_EOL;
+		$iHP = $oContact->getHomepageCount();
+		for ($j = 0; $j < $iHP; $j++) {
+		    echo 'Homepage: ' . $oContact->getHomepage($j) . '<br/>' . PHP_EOL;
+		}
+		echo '<br/>' . PHP_EOL;
 
 		// test iterating through all addresses
 		$iAC = $oContact->getAddressCount();

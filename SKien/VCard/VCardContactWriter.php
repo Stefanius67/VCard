@@ -6,11 +6,10 @@ namespace SKien\VCard;
 /**
  * Helper class that builds the string buffer for one contact in the VCard format.
  *
- * @package SKien-VCard
- * @since 1.0.4
- * @version 1.0.4
+ * @package VCard
  * @author Stefanius <s.kientzler@online.de>
  * @copyright MIT License - see the LICENSE file for details
+ * @internal
  */
 class VCardContactWriter
 {
@@ -52,6 +51,7 @@ class VCardContactWriter
         $this->buffer .= $this->buildAddresses();
         $this->buffer .= $this->buildPhoneNumbers();
         $this->buffer .= $this->buildMailaddresses();
+        $this->buffer .= $this->buildHomepages();
         $this->buffer .= $this->buildAdditionalData();
         $this->buffer .= $this->buildCategories();
         $this->buffer .= $this->buildPhoto();
@@ -94,7 +94,7 @@ class VCardContactWriter
         $strName .= $this->maskString($this->oContact->getSuffix());
 
         $buffer = $this->buildProperty('N', $strName, false);
-        $buffer .= $this->buildProperty('FN', $this->oContact->getFirstName() . ' ' . $this->oContact->getLastName());
+        $buffer .= $this->buildProperty('FN', $this->oContact->getName());
         $buffer .= $this->buildProperty('NICKNAME', $this->oContact->getNickName());
 
         return $buffer;
@@ -132,7 +132,7 @@ class VCardContactWriter
             if ($oAddress) {
                 $buffer .= $oAddress->buildFullAddress();
                 $buffer .= $oAddress->buildLabel();
-                if ($oAddress->getPreferred()) {
+                if ($oAddress->isPreferred()) {
                     $iPref = $i;
                 }
             }
@@ -178,16 +178,28 @@ class VCardContactWriter
     }
 
     /**
+     * Build all homepages.
+     * @return string
+     */
+    protected function buildHomepages() : string
+    {
+        // homepages
+        $buffer = '';
+        $iCnt = $this->oContact->getHomepageCount();
+        for ($i = 0; $i < $iCnt; $i++) {
+            $buffer .= $this->buildProperty('URL;TYPE=WORK', $this->oContact->getHomepage($i));
+        }
+        return $buffer;
+    }
+
+    /**
      * Build all additional properties.
      * @return string
      */
     protected function buildAdditionalData() : string
     {
-        // homepage
-        $buffer = $this->buildProperty('URL;TYPE=WORK', $this->oContact->getHomepage());
-
         // personal data
-        $buffer .= $this->buildProperty('BDAY', $this->oContact->getDateOfBirth());
+        $buffer = $this->buildProperty('BDAY', (string) $this->oContact->getDateOfBirth());
         if ($this->oContact->getGender() > 0) {
             $buffer .= $this->buildProperty('X-WAB-GENDER', (string) $this->oContact->getGender());
         }

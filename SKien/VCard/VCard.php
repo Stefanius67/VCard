@@ -1,28 +1,30 @@
 <?php
 declare(strict_types=1);
 
-/**
- * package to create or read vCard (*.vcf) file
- *
- * creates vCard Version 3.0 (RFC 2426)
- * imports vCards Version 2.1 and 3.0
- */
 namespace SKien\VCard;
 
 /**
- * Base class to create or read vcard (*.vcf) file
- * file may contain multiple contacts
+ * Base class to create or read vcard (.vcf) file.
  *
- * history:
- * date         version
- * 2020-02-23   initial version.
- * 2020-05-28   renamed namespace to fit PSR-4 recommendations for autoloading.
- * 2020-07-22   added missing PHP 7.4 type hints / docBlock changes.
+ * A vcard file may contain multiple contacts.
+ * - Creation of vCard Files Version <b>3.0</b> (RFC 2426)
+ * - Import of vCard Files Version <b>2.1</b> and <b>3.0</b>
  *
- * @package SKien-VCard
- * @since 1.0.0
- * @version 1.0.3
- * @author Stefanius <s.kien@online.de>
+ * #### Create a VCard for writing:
+ * Create an instance of `VCard`, add the desired `VCardContacts` to it and save
+ * it as file with the `write()` method.
+ *
+ * #### Retrieve contacts from an existing VCard file:
+ * Open the file with the `read()` method and retrieve the containing contacts with
+ * the `getContact()` method.
+ *
+ * You can either iterate over all contacts from `0 ... getContactCount()` (instead
+ * of getContactCount() the return value of `read()` can be used) or you can use
+ * `getContactList()` to call up a list of names of all contacts contained so you be
+ * able to access a specific contact.
+ *
+ * @package VCard
+ * @author Stefanius <s.kientzler@online.de>
  * @copyright MIT License - see the LICENSE file for details
  */
 class VCard
@@ -30,32 +32,54 @@ class VCard
     use VCardHelper;
 
     /** preferrred entry     */
-    const PREF      = 'PREF';
+    public const PREF      = 'PREF';
     /** information for work     */
-    const WORK      = 'WORK';
+    public const WORK      = 'WORK';
     /** information for home     */
-    const HOME      = 'HOME';
-    /** cellular     */
-    const CELL      = 'CELL';
-    /** cellular     */
-    const FAX       = 'FAX';
+    public const HOME      = 'HOME';
     /** postal address   */
-    const POSTAL    = 'POSTAL';
+    public const POSTAL    = 'POSTAL';
     /** parcel address for delivery      */
-    const PARCEL    = 'PARCEL';
+    public const PARCEL    = 'PARCEL';
+    /** international address for delivery      */
+    public const INTER     = 'INTL';
+    /** domestic address for delivery      */
+    public const DOMESTIC  = 'DOM';
 
-    /** max. length of line in vcard - file    */
-    const MAX_LINE_LENGTH = 75;
+    /** communication number: standard phone    */
+    public const VOICE     = 'VOICE';
+    /** communication number: cellular phone    */
+    public const CELL      = 'CELL';
+    /** communication number: facsimile device  */
+    public const FAX       = 'FAX';
+    /** communication number: number has voice messaging support     */
+    public const MSG       = 'MSG';
+    /** communication number: video conferencing telephone number    */
+    public const VIDEO     = 'VIDEO';
+    /** communication number: paging device telephone number    */
+    public const PAGER     = 'PAGER';
+    /** communication number: bulletin board system telephone number    */
+    public const BBS       = 'BBS';
+    /** communication number: modem connected telephone number    */
+    public const MODEM     = 'MODEM';
+    /** communication number: car-phone telephone number    */
+    public const CAR       = 'CAR';
+    /** communication number: ISDN service telephone number    */
+    public const ISDN      = 'ISDN';
+    /** communication number: <b>p</b>ersonal <b>c</b>ommunication <b>s</b>ervices telephone number    */
+    public const PCS       = 'PCS';
 
-    /** no error    */
-    const OK = 0;
+
+    /** @internal max. length of line in a vcard - file    */
+    public const MAX_LINE_LENGTH = 75;
 
     /** @var string  encoding for values    */
     static protected string $strEncoding = 'UTF-8';
-    /** @var array    data write buffer */
+    /** @var VCardContact[] all contacts in the VCard file */
     protected array $aContacts = array();
 
     /**
+     * Get the encoding currently set.
      * @return string
      */
     public static function getEncoding() : string
@@ -64,12 +88,12 @@ class VCard
     }
 
     /**
-     * Set the encoding of the file.
+     * Set the encoding for the file.
      * For export:
      * - always use UTF-8 (default).
      *   only exception i found so far is MS-Outlook - it comes in trouble with german
      *   umlauts, so use 'Windwos-1252' instead.
-     *   please send note to s.kien@online.de if you found any further exceptions...
+     *   please send note to s.kientzler@online.de if you found any further exceptions...
      *
      * For import:
      * -  feel free to use your preferred charset (may depends on configuration of your system)
@@ -110,7 +134,12 @@ class VCard
         } else {
             // output for test or in case of errors
             $buffer = str_replace(PHP_EOL, '<br>', $buffer);
-            echo  'Filename: ' . $strFilename . '<br><br>';
+            echo '<!DOCTYPE html>' . PHP_EOL;
+            echo '<head><title>vCard Exporttest Display</title>' . PHP_EOL;
+            echo '</head>' . PHP_EOL;
+            echo '<body>' . PHP_EOL;
+            echo '<h1>Filename: ' . $strFilename . '</h1>';
+            $buffer = '<pre>' . $buffer . '</pre></body>';
         }
 
         echo $buffer;
@@ -177,15 +206,30 @@ class VCard
      * Number of contacts the vcard containing.
      * @return int
      */
-    public function getContactCount()  : int
+    public function getContactCount() : int
     {
         return count($this->aContacts);
     }
 
     /**
-     * Get requested contact.
-     * @param int $i
-     * @return VCardContact|null
+     * Get a named list of all contacts.
+     * The complete VCardContact object can be called up with the method
+     * `getContact ()` via the corresponding index.
+     * @return array
+     */
+    public function getContactList() : array
+    {
+        $aList = array();
+        foreach ($this->aContacts as $oContact) {
+            $aList[] = $oContact->getName;
+        }
+        return $aList;
+    }
+
+    /**
+     * Get contact data.
+     * @param int $i    index of the requested contact (`0 <= $i < getContactCount`)
+     * @return VCardContact|null    null, if index is out of the contact count
      */
     public function getContact(int $i) : ?VCardContact
     {
