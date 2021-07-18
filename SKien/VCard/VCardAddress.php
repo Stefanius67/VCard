@@ -4,22 +4,21 @@ declare(strict_types=1);
 namespace SKien\VCard;
 
 /**
- * Class representing address within a contact.
- * Each contact may contains multiple adresses.
+ * Class representing one address within a contact.
  *
- * uses helpers from trait VCardHelper
- * @see VCardHelper
+ * #### Add an address to a contact for writing:
+ * Create a new instance of a `VCardAdress`, set its property and add the address
+ * to a contact using `VCardContact::addAddress()`
  *
-* history:
- * date         version
- * 2020-02-23   initial version.
- * 2020-05-28   renamed namespace to fit PSR-4 recommendations for autoloading.
- * 2020-07-22   added missing PHP 7.4 type hints / docBlock changes
+ * #### Retrieve an address from a read contact:
+ * Use `VCardContact::getAddress()` to retrieve existing address within a given
+ * contact.
  *
- * @package SKien-VCard
- * @since 1.0.0
- * @version 1.0.3
- * @author Stefanius <s.kien@online.de>
+ * @see  VCardContact::addAddress()
+ * @see  VCardContact::getAddress()
+ *
+ * @package VCard
+ * @author Stefanius <s.kientzler@online.de>
  * @copyright MIT License - see the LICENSE file for details
  */
 class VCardAddress
@@ -43,7 +42,7 @@ class VCardAddress
 
     /**
      * Full address information.
-     * build semicolon delimitered string containing:
+     * Build semicolon delimitered string containing:
      *  - post office address (not supported)
      *  - extended address (not supported)
      *  - street (including house number)
@@ -52,6 +51,7 @@ class VCardAddress
      *  - postal code
      *  - country
      * @return string
+     * @internal only should be called by the VCardContactWriter
      */
     public function buildFullAddress() : string
     {
@@ -73,8 +73,9 @@ class VCardAddress
     }
 
     /**
-     * label for address
+     * Build label for ther address.
      * @return string
+     * @internal only should be called by the VCardContactWriter
      */
     public function buildLabel(): string
     {
@@ -107,6 +108,7 @@ class VCardAddress
      *
      * @param string $strValue
      * @param array  $aParams
+     * @internal only should be called by the VCardContactReader
      */
     public function parseFullAddress(string $strValue, array $aParams) : void
     {
@@ -134,6 +136,7 @@ class VCardAddress
     }
 
     /**
+     * Set street.
      * @param string $strStr
      */
     public function setStr(string $strStr) : void
@@ -142,6 +145,7 @@ class VCardAddress
     }
 
     /**
+     * Set city.
      * @param string $strCity
      */
     public function setCity(string $strCity) : void
@@ -150,6 +154,7 @@ class VCardAddress
     }
 
     /**
+     * Set Postcode
      * @param string $strPostcode
      */
     public function setPostcode(string $strPostcode) : void
@@ -158,6 +163,7 @@ class VCardAddress
     }
 
     /**
+     * Set country
      * @param string $strCountry
      */
     public function setCountry(string $strCountry) : void
@@ -166,6 +172,7 @@ class VCardAddress
     }
 
     /**
+     * Set region
      * @param string $strRegion
      */
     public function setRegion(string $strRegion) : void
@@ -174,14 +181,18 @@ class VCardAddress
     }
 
     /**
-     * @param string $strType
+     * Set type.
+     * Any combination of the predefined types VCard::PREF, VCard::WORK, VCard::HOME
+     * VCard::POSTAL, VCard::PARCEL, VCard::INTER or VCard::DOMESTIC can be set.
+     * @param string|array $type    one single type or an array of multiple types
      */
-    public function setType(string $strType) : void
+    public function setType($type) : void
     {
-        $this->strType = $strType;
+        $this->strType = is_array($type) ? implode(',', $type) : $type;
     }
 
     /**
+     * Set this address as preferred.
      * @param bool $bPreferred
      */
     public function setPreferred(bool $bPreferred) : void
@@ -190,6 +201,7 @@ class VCardAddress
     }
 
     /**
+     * Get street.
      * @return string $strStr
      */
     public function getStr() : string
@@ -198,6 +210,7 @@ class VCardAddress
     }
 
     /**
+     * Get city.
      * @return string  $strCity
      */
     public function getCity() : string
@@ -206,6 +219,7 @@ class VCardAddress
     }
 
     /**
+     * Get postcode.
      * @return string  $strPostcode
      */
     public function getPostcode() : string
@@ -214,6 +228,7 @@ class VCardAddress
     }
 
     /**
+     * Get country.
      * @return string  $strCountry
      */
     public function getCountry() : string
@@ -222,6 +237,7 @@ class VCardAddress
     }
 
     /**
+     * Get region.
      * @return string  $strRegion
      */
     public function getRegion() : string
@@ -230,7 +246,8 @@ class VCardAddress
     }
 
     /**
-     * @return string  $strType
+     * Get type.
+     * @return string  $strType can b comma separated list of multiple types.
      */
     public function getType() : string
     {
@@ -238,9 +255,10 @@ class VCardAddress
     }
 
     /**
+     * Get preferred state.
      * @return bool $bPreferred
      */
-    public function getPreferred() : bool
+    public function isPreferred() : bool
     {
         return $this->bPreferred;
     }

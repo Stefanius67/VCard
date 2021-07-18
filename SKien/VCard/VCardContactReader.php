@@ -6,11 +6,10 @@ namespace SKien\VCard;
 /**
  * Helper class that parses property lines from a VCard format file.
  *
- * @package SKien-VCard
- * @since 1.0.4
- * @version 1.0.4
+ * @package VCard
  * @author Stefanius <s.kientzler@online.de>
  * @copyright MIT License - see the LICENSE file for details
+ * @internal
  */
 class VCardContactReader
 {
@@ -37,12 +36,13 @@ class VCardContactReader
     public function addProperty(string $strName, array $aParams, string $strValue) : void
     {
         // table to parse property depending on propertyname.
-        // value have to be either name of method with signature
+        // value have to be either name of method of this class with signature
         //
-        //      methodname( string strValue, array aParams )
+        //      methodname(string strValue, array aParams)
         //
-        // or
-        //      propertyname  ( => unmasked value will be assigned to property of contact object)
+        // or property from VCardContact ($this->oContact)
+        //
+        //      settername(string strValue);
         //
         $aMethodOrProperty = array(
             'N'             => 'parseName',
@@ -56,7 +56,7 @@ class VCardContactReader
             'NICKNAME'      => 'setNickName',
             'TITLE'         => 'setPosition',
             'ROLE'          => 'setRole',
-            'URL'           => 'setHomepage',
+            'URL'           => 'addHomepage',
             'NOTE'          => 'setNote',
             'LABEL'         => 'setLabel',
             'BDAY'          => 'setDateOfBirth',
@@ -75,7 +75,7 @@ class VCardContactReader
                 call_user_func_array(array($this, $strPtr), array($strValue, $aParams));
             } elseif (method_exists($this->oContact, $strPtr)) {
                 // call setter from contact with unmasket value
-                call_user_func_array(array($this->oContact, $strPtr), array($strValue));
+                call_user_func_array(array($this->oContact, $strPtr), array($this->unmaskString($strValue)));
             }
         }
     }

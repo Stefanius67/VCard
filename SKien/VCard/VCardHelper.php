@@ -4,20 +4,12 @@ declare(strict_types=1);
 namespace SKien\VCard;
 
 /**
- * Helper trait containing some methods used by multiple classes in package
+ * Helper trait containing some methods used by multiple classes in package.
  *
- * history:
- * date         version
- * 2020-02-23   initial version.
- * 2020-05-15   added html_entity_decode before mask string for export.
- * 2020-05-28   renamed namespace to fit PSR-4 recommendations for autoloading.
- * 2020-07-22   added missing PHP 7.4 type hints / docBlock changes
- *
- * @package SKien-VCard
- * @since 1.0.0
- * @version 1.0.3
- * @author Stefanius <s.kien@online.de>
+ * @package VCard
+ * @author Stefanius <s.kientzler@online.de>
  * @copyright MIT License - see the LICENSE file for details
+ * @internal
  */
 trait VCardHelper
 {
@@ -29,7 +21,7 @@ trait VCardHelper
      * @param bool      $bMask      have value to be masked (default: true)
      * @return string
      */
-    public function buildProperty(string $strName, string $strValue, bool $bMask = true) : string
+    protected function buildProperty(string $strName, string $strValue, bool $bMask = true) : string
     {
         $buffer = '';
         if (!empty($strValue)) {
@@ -58,7 +50,7 @@ trait VCardHelper
      * @param string $strValue
      * @return string
      */
-    public function maskString(string $strValue) : string
+    protected function maskString(string $strValue) : string
     {
         // decode entities before ';' is replaced !!
         $strValue = html_entity_decode($strValue, ENT_HTML5);
@@ -81,7 +73,7 @@ trait VCardHelper
      * @param string $strValue
      * @return string
      */
-    public function unmaskString(string $strValue) : string
+    protected function unmaskString(string $strValue) : string
     {
         $strValue = str_replace("\\n", "\n", $strValue);
         $strValue = str_replace("\\,", ",", $strValue);
@@ -102,7 +94,7 @@ trait VCardHelper
      * @param string $strValue
      * @return array
      */
-    public function explodeMaskedString(string $strDelim, string $strValue) : array
+    protected function explodeMaskedString(string $strDelim, string $strValue) : array
     {
         // save masked delimiters, tag unmasked, resore saved and explode on new taged delimiter
         $strSave = "\\" . $strDelim;
@@ -120,7 +112,7 @@ trait VCardHelper
      * @param string $strType
      * @param string $strImage
      */
-    public function parseImageData(string $blobImage, string &$strType, string &$strImage) : void
+    protected function parseImageData(string $blobImage, string &$strType, string &$strImage) : void
     {
         // extract image type from binary data (e.g. data:image/jpg;base64,)
         $i = strpos($blobImage, ',');
@@ -236,7 +228,7 @@ trait VCardHelper
      * @param string    $strType    image types supported by imagecreatefromstring
      * @return mixed    image resource
      */
-    public function imageFromString(string $strImage, string $strType)
+    protected function imageFromString(string $strImage, string $strType)
     {
         $strImage = base64_decode($strImage);
         if ($strType != 'BMP') {
