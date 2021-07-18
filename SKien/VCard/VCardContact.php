@@ -31,9 +31,9 @@ class VCardContact
     use VCardHelper;
 
     /** gender: female (Microsoft specific) */
-    public const MS_FEMALE    = '1';
+    public const MS_FEMALE = '1';
     /** gender: male (Microsoft specific) */
-    public const MS_MALE    = '2';
+    public const MS_MALE = '2';
     /** Date type: string */
     public const DT_STRING = 0;
     /** Date type: unix timestamp */

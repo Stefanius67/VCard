@@ -93,7 +93,7 @@ class VCardAddress
         // values separated by semikolon
         $strValue  = $this->strStr . PHP_EOL;
         $strValue .= $this->strPostcode . ' ' . $this->strCity . PHP_EOL;
-        if (strlen($this->strRegion) > 0 || strlen($this->strCountry) > 0 ) {
+        if (strlen($this->strRegion) > 0 || strlen($this->strCountry) > 0) {
             $strSep = (strlen($this->strRegion) > 0 && strlen($this->strCountry) > 0 ) ? ' - ' : '';
             $strValue .= $this->strRegion . $strSep . $this->strCountry . PHP_EOL;
         }
