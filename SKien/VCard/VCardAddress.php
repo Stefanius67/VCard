@@ -59,15 +59,21 @@ class VCardAddress
         if ($this->bPreferred) {
             $strField .= ',PREF';
         }
-
+        // post office address (not supported)
+        // extended address (not supported)
+        // street (including house number)
+        // city
+        // region
+        // postal code
+        // country
         // values separated by semikolon
-        $strValue  = ';';                                           // post office address (not supported)
-        $strValue .= ';';                                           // extended address (not supported)
-        $strValue .= $this->maskString($this->strStr) . ';';        // street (including house number)
-        $strValue .= $this->maskString($this->strCity) . ';';       // city
-        $strValue .= $this->maskString($this->strRegion) . ';';     // region
-        $strValue .= $this->maskString($this->strPostcode) . ';';   // postal code
-        $strValue .= $this->maskString($this->strCountry);          // country
+        $strValue  = ';';
+        $strValue .= ';';
+        $strValue .= $this->maskString($this->strStr) . ';';
+        $strValue .= $this->maskString($this->strCity) . ';';
+        $strValue .= $this->maskString($this->strRegion) . ';';
+        $strValue .= $this->maskString($this->strPostcode) . ';';
+        $strValue .= $this->maskString($this->strCountry);
 
         return $this->buildProperty($strField, $strValue, false);
     }
@@ -114,19 +120,24 @@ class VCardAddress
     {
         $aSplit = $this->explodeMaskedString(';', $strValue);
         if (isset($aSplit[2])) {
-            $this->strStr = $this->unmaskString($aSplit[2]);        // street (including house number)
+            // street (including house number)
+            $this->strStr = $this->unmaskString($aSplit[2]);
         }
         if (isset($aSplit[3])) {
-            $this->strCity = $this->unmaskString($aSplit[3]);       // city
+            // city
+            $this->strCity = $this->unmaskString($aSplit[3]);
         }
         if (isset($aSplit[4])) {
-            $this->strRegion = $this->unmaskString($aSplit[4]);     // region
+            // region
+            $this->strRegion = $this->unmaskString($aSplit[4]);
         }
         if (isset($aSplit[5])) {
-            $this->strPostcode = $this->unmaskString($aSplit[5]);   // postal code
+            // postal code
+            $this->strPostcode = $this->unmaskString($aSplit[5]);
         }
         if (isset($aSplit[6])) {
-            $this->strCountry = $this->unmaskString($aSplit[6]);    // country
+            // country
+            $this->strCountry = $this->unmaskString($aSplit[6]);
         }
         if (isset($aParams['TYPE'])) {
             $this->strType = $aParams['TYPE'];
