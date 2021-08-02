@@ -6,7 +6,7 @@ namespace SKien\VCard;
 /**
  * Class representing all data to one contact.
  * Each contact may contains multiple
- * - adresses
+ * - addresses
  * - communication numbers
  * - e-mail addresses
  * - homepages
@@ -16,10 +16,12 @@ namespace SKien\VCard;
  * Create a new instance of a `VCardContact`, set all properties and add the contact
  * to a vcard using `VCard::addContact()`
  *
- * #### Retrieve a contact from a read VCard:
+ * #### Retrieve a contact after read VCard file:
+ * Use `VCard::getContactList()` to retrieve list (array) of all contacts within the vcard.
  * Use `VCard::getContact()` to retrieve existing contact within vcard.
  *
  * @see VCard::addContact()
+ * @see VCard::getContactList()
  * @see VCard::getContact()
  *
  * @package VCard

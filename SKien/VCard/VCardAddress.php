@@ -10,7 +10,7 @@ namespace SKien\VCard;
  * Create a new instance of a `VCardAdress`, set its property and add the address
  * to a contact using `VCardContact::addAddress()`
  *
- * #### Retrieve an address from a read contact:
+ * #### Retrieve an address within a contact:
  * Use `VCardContact::getAddress()` to retrieve existing address within a given
  * contact.
  *
