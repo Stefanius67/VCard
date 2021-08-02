@@ -16,6 +16,11 @@ The package can also import an existing VCF file and makes it available to the P
 as an iterator that returns the details of each contact that was found in the vCard file. The 
 package supports vCard format version 2.1 and 3.0.
 
+## New in Version 1.1.0
+- Support of multiple homepages per contact
+- new method `VCard::listContacts() : array`
+
+
 ## Installation   
 You can download the  Latest [release version ](https://www.phpclasses.org/package/11545-PHP-Import-and-export-contact-lists-in-vCard-format.html) from PHPClasses.org
 

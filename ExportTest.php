@@ -8,6 +8,7 @@ require_once 'autoloader.php';
 require_once 'blobPortrait.php';
 
 	$oVCard = new VCard();
+	$oVCard->setEncoding('Windows-1252');
 
 	// just create new contact
 	$oContact = new VCardContact();

@@ -92,7 +92,7 @@ class VCard
      * For export:
      * - always use UTF-8 (default).
      *   only exception i found so far is MS-Outlook - it comes in trouble with german
-     *   umlauts, so use 'Windwos-1252' instead.
+     *   umlauts, so use 'Windows-1252' instead.
      *   please send note to s.kientzler@online.de if you found any further exceptions...
      *
      * For import:
@@ -127,7 +127,7 @@ class VCard
         }
         // vcf-file generation doesn't make sense if some errormessage generated before...
         if (!$bTest && ob_get_contents() == '') {
-            header('Content-Type: text/x-vCard; name=' . $strFilename);
+            header('Content-Type: text/x-vCard; charset=utf-8; name=' . $strFilename);
             header('Content-Length: ' . strlen($buffer));
             header('Connection: close');
             header('Content-Disposition: attachment; filename=' . $strFilename);
