@@ -138,7 +138,7 @@ class VCardContactWriter
             }
         }
         // set preferred address also as default postal address for MS
-        $buffer .= $this->buildProperty('X-MS-OL-DEFAULT-POSTAL-ADDRESS', (string) ($iPref + 1));
+        $buffer .= $this->buildProperty('X-MS-OL-DEFAULT-POSTAL-ADDRESS', (string)($iPref + 1));
 
         return $buffer;
     }
@@ -199,9 +199,9 @@ class VCardContactWriter
     protected function buildAdditionalData() : string
     {
         // personal data
-        $buffer = $this->buildProperty('BDAY', $this->oContact->getDateOfBirth());  /** @phpstan-ignore-line */
+        $buffer = $this->buildProperty('BDAY', /** @scrutinizer ignore-type */ $this->oContact->getDateOfBirth()); /** @phpstan-ignore-line */
         if ($this->oContact->getGender() > 0) {
-            $buffer .= $this->buildProperty('X-WAB-GENDER', (string) $this->oContact->getGender());
+            $buffer .= $this->buildProperty('X-WAB-GENDER', (string)$this->oContact->getGender());
         }
         // annotation
         $buffer .= $this->buildProperty('NOTE', $this->oContact->getNote());

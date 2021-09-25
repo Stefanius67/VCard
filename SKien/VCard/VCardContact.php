@@ -190,7 +190,7 @@ class VCardContact
     {
         if (filter_var($strFilename, FILTER_VALIDATE_URL)) {
             // get type from extension
-            $strType = strtolower((string) pathinfo($strFilename, PATHINFO_EXTENSION));
+            $strType = strtolower((string)pathinfo($strFilename, PATHINFO_EXTENSION));
             $this->blobPortrait = 'data:image/' . $strType . ';base64,';
 
             // use curl to be independet of [allow_url_fopen] enabled on the system
@@ -361,7 +361,7 @@ class VCardContact
                 $img = $this->imageFromString($strImage, $strType);
                 imagealphablending($img, true);
                 imagesavealpha($img, true);
-                $strExt = strtolower((string) pathinfo($strFilename, PATHINFO_EXTENSION));
+                $strExt = strtolower((string)pathinfo($strFilename, PATHINFO_EXTENSION));
                 if (strlen($strExt) == 0) {
                     $strExt = strtolower($strType);
                     $strFilename .= '.' . $strExt;

@@ -252,8 +252,8 @@ trait VCardHelper
             $height = 0;
             if (substr($header, 0, 4) == "424d") {
                 $parts = str_split($header, 2);
-                $width = (int) hexdec($parts[19] . $parts[18]);
-                $height = (int) hexdec($parts[23] . $parts[22]);
+                $width = (int)hexdec($parts[19] . $parts[18]);
+                $height = (int)hexdec($parts[23] . $parts[22]);
                 unset($parts);
             }
             $x = 0;
@@ -276,9 +276,9 @@ trait VCardHelper
                         }
                     }
                     $i_pos = $i * 2;
-                    $r = (int) hexdec($body[$i_pos + 4] . $body[$i_pos + 5]);
-                    $g = (int) hexdec($body[$i_pos + 2] . $body[$i_pos + 3]);
-                    $b = (int) hexdec($body[$i_pos] . $body[$i_pos + 1]);
+                    $r = (int)hexdec($body[$i_pos + 4] . $body[$i_pos + 5]);
+                    $g = (int)hexdec($body[$i_pos + 2] . $body[$i_pos + 3]);
+                    $b = (int)hexdec($body[$i_pos] . $body[$i_pos + 1]);
                     $color = imagecolorallocate($img, $r, $g, $b);
                     if ($color !== false) {
                         imagesetpixel($img, $x, $height - $y, $color);
