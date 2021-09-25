@@ -103,7 +103,7 @@ class VCardContact
      * @link https://en.wikipedia.org/wiki/E.164
      * @link https://www.itu.int/rec/T-REC-X.121-200010-I/en
      * @param string $strPhone      the number (SHOULD conform to the semantics of E.164 / X.121)
-     * @param string|array $type    one single type or an array of multiple types
+     * @param string|array<string> $type    one single type or an array of multiple types
      * @param bool $bPreferred      mark number as preferred
      */
     public function addPhone(string $strPhone, $type, bool $bPreferred) : void
@@ -150,7 +150,7 @@ class VCardContact
             // DateTime -object
             $this->strDateOfBirth = $DateOfBirth->format('Y-m-d');
         } else if (is_numeric($DateOfBirth)) {
-            $this->strDateOfBirth = date('Y-m-d', $DateOfBirth);
+            $this->strDateOfBirth = date('Y-m-d', intval($DateOfBirth));
         } else {
             $this->strDateOfBirth = $DateOfBirth;
         }
@@ -222,8 +222,9 @@ class VCardContact
                     break;
             }
             $img = file_get_contents($strFilename);
-
-            $this->blobPortrait .= base64_encode($img);
+            if ($img !== false) {
+                $this->blobPortrait .= base64_encode($img);
+            }
         }
     }
 
@@ -444,7 +445,7 @@ class VCardContact
      * <li> first phone matches specified type is used (contact may contains multiple phone numbers of same type) </li>
      * <li> if VCard::PREF specified, first number in contact used, if no preferred item found </li></ul>
      * @param mixed $i     reference to address (int => index, string => type)
-     * @return array or null
+     * @return array<string|string>|null
      */
     public function getPhone($i) : ?array
     {
@@ -648,7 +649,7 @@ class VCardContact
             case self::DT_UNIX_TIMESTAMP:
                 return (empty($this->strDateOfBirth) ? 0 : $dtBirth->getTimestamp());
             case self::DT_OBJECT:
-                return (empty($this->strDateOfBirth) ? null : $dtBirth);
+                return $dtBirth;
             default:
                 return (empty($this->strDateOfBirth) ? '' : $dtBirth->format($strFormat));
         }

@@ -7,8 +7,7 @@
 # 	https://github.com/phpstan/phpstan
 #
 parameters:
-	level: 6
-	checkMissingIterableValueType: false
+	level: max
 	paths:
 		- SKien/VCard
 		

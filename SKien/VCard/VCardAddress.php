@@ -113,7 +113,7 @@ class VCardAddress
      *  delimitered by semicolon (be aware of masked delimiters)
      *
      * @param string $strValue
-     * @param array  $aParams
+     * @param array<string,string>  $aParams
      * @internal only should be called by the VCardContactReader
      */
     public function parseFullAddress(string $strValue, array $aParams) : void
@@ -195,7 +195,7 @@ class VCardAddress
      * Set type.
      * Any combination of the predefined types VCard::PREF, VCard::WORK, VCard::HOME
      * VCard::POSTAL, VCard::PARCEL, VCard::INTER or VCard::DOMESTIC can be set.
-     * @param string|array $type    one single type or an array of multiple types
+     * @param string|array<string> $type    one single type or an array of multiple types
      */
     public function setType($type) : void
     {

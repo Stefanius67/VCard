@@ -184,7 +184,7 @@ class VCard
             if (strtoupper($strLine) == 'BEGIN:VCARD') {
                 $oContact = new VCardContact();
                 $oReader = new VCardContactReader($oContact);
-            } elseif (strtoupper($strLine) == 'END:VCARD') {
+            } elseif (strtoupper($strLine) == 'END:VCARD' && $oContact !== null) {
                 $this->aContacts[] = $oContact;
                 $oContact = null;
                 $oReader = null;
@@ -215,13 +215,13 @@ class VCard
      * Get a named list of all contacts.
      * The complete VCardContact object can be called up with the method
      * `getContact ()` via the corresponding index.
-     * @return array
+     * @return array<string>
      */
     public function getContactList() : array
     {
         $aList = array();
         foreach ($this->aContacts as $oContact) {
-            $aList[] = $oContact->getName;
+            $aList[] = $oContact->getName();
         }
         return $aList;
     }

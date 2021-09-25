@@ -63,6 +63,9 @@ trait VCardHelper
         $strFrom = mb_detect_encoding($strValue);
         if ($strFrom !== false && $strFrom != VCard::getEncoding()) {
             $strValue = iconv($strFrom, VCard::getEncoding(), $strValue);
+            if ($strValue === false) {
+                $strValue = '';
+            }
         }
 
         return $strValue;
@@ -82,6 +85,9 @@ trait VCardHelper
         $strFrom = mb_detect_encoding($strValue);
         if ($strFrom !== false && $strFrom != VCard::getEncoding()) {
             $strValue = iconv($strFrom, VCard::getEncoding() . "//IGNORE", $strValue);
+            if ($strValue === false) {
+                $strValue = '';
+            }
         }
 
         return $strValue;
@@ -92,11 +98,11 @@ trait VCardHelper
      * to ignore masked delimiters belonging to value
      * @param string $strDelim
      * @param string $strValue
-     * @return array
+     * @return array<string>
      */
     protected function explodeMaskedString(string $strDelim, string $strValue) : array
     {
-        // save masked delimiters, tag unmasked, resore saved and explode on new taged delimiter
+        // save masked delimiters, tag unmasked, restore saved and explode on new taged delimiter
         $strSave = "\\" . $strDelim;
         $strValue = str_replace($strSave, "\x00", $strValue);
         $strValue = str_replace($strDelim, "\x01", $strValue);
@@ -127,8 +133,8 @@ trait VCardHelper
 
     /**
      * Parse param string
-     * @param array $aParamsIn
-     * @return array
+     * @param array<string> $aParamsIn
+     * @return array<string,string>
      */
     protected function parseParams(array $aParamsIn) : array
     {
@@ -240,7 +246,7 @@ trait VCardHelper
             // thanks to Tomáš Grasl for following code from
             // https://gist.github.com/freema/df8e7bae83c0e2a50ea4
             $temp = unpack("H*", $strImage);
-            $hex = $temp[1];
+            $hex = ($temp !== false ? $temp[1] : 0);
             $header = substr($hex, 0, 108);
             $width = 0;
             $height = 0;
@@ -253,28 +259,32 @@ trait VCardHelper
             $x = 0;
             $y = 1;
             $img = imagecreatetruecolor($width, $height);
-            $body = substr($hex, 108);
-            $body_size = (strlen($body) / 2);
-            $header_size = ($width * $height);
-            $usePadding = ($body_size > ($header_size * 3) + 4);
-            for ($i = 0; $i < $body_size; $i += 3) {
-                if ($x >= $width) {
-                    if ($usePadding) {
-                        $i += $width % 4;
+            if ($img !== false) {
+                $body = substr($hex, 108);
+                $body_size = (strlen($body) / 2);
+                $header_size = ($width * $height);
+                $usePadding = ($body_size > ($header_size * 3) + 4);
+                for ($i = 0; $i < $body_size; $i += 3) {
+                    if ($x >= $width) {
+                        if ($usePadding) {
+                            $i += $width % 4;
+                        }
+                        $x = 0;
+                        $y++;
+                        if ($y > $height) {
+                            break;
+                        }
                     }
-                    $x = 0;
-                    $y++;
-                    if ($y > $height) {
-                        break;
+                    $i_pos = $i * 2;
+                    $r = (int) hexdec($body[$i_pos + 4] . $body[$i_pos + 5]);
+                    $g = (int) hexdec($body[$i_pos + 2] . $body[$i_pos + 3]);
+                    $b = (int) hexdec($body[$i_pos] . $body[$i_pos + 1]);
+                    $color = imagecolorallocate($img, $r, $g, $b);
+                    if ($color !== false) {
+                        imagesetpixel($img, $x, $height - $y, $color);
                     }
+                    $x++;
                 }
-                $i_pos = $i * 2;
-                $r = (int) hexdec($body[$i_pos + 4] . $body[$i_pos + 5]);
-                $g = (int) hexdec($body[$i_pos + 2] . $body[$i_pos + 3]);
-                $b = (int) hexdec($body[$i_pos] . $body[$i_pos + 1]);
-                $color = imagecolorallocate($img, $r, $g, $b);
-                imagesetpixel($img, $x, $height - $y, $color);
-                $x++;
             }
         }
         return $img;

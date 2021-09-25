@@ -30,7 +30,7 @@ class VCardContactReader
     /**
      * Add property from import file.
      * @param string $strName
-     * @param array $aParams
+     * @param array<string,string> $aParams
      * @param string $strValue
      */
     public function addProperty(string $strName, array $aParams, string $strValue) : void
@@ -70,12 +70,14 @@ class VCardContactReader
 
         if (isset($aMethodOrProperty[$strName])) {
             $strPtr = $aMethodOrProperty[$strName];
-            if (method_exists($this, $strPtr)) {
+            $ownMethod = [$this, $strPtr];
+            $contactMethod = [$this->oContact, $strPtr];
+            if (is_callable($ownMethod)) {
                 // call method
-                call_user_func_array(array($this, $strPtr), array($strValue, $aParams));
-            } elseif (method_exists($this->oContact, $strPtr)) {
+                call_user_func_array($ownMethod, array($strValue, $aParams));
+            } elseif (is_callable($contactMethod)) {
                 // call setter from contact with unmasket value
-                call_user_func_array(array($this->oContact, $strPtr), array($this->unmaskString($strValue)));
+                call_user_func_array($contactMethod, array($this->unmaskString($strValue)));
             }
         }
     }
@@ -90,7 +92,7 @@ class VCardContactReader
      *  - honorific suffixes
      *  delimitered by semicolon (be aware of masked delimiters)
      * @param string $strValue
-     * @param array $aParams
+     * @param array<string,string> $aParams
      */
     protected function parseName(string $strValue, array $aParams) : void
     {
@@ -109,7 +111,7 @@ class VCardContactReader
 
     /**
      * @param string $strValue
-     * @param array $aParams
+     * @param array<string,string> $aParams
      * @see VCardAddress::parseFullAddress()
      */
     protected function parseAdr(string $strValue, array $aParams) : void
@@ -122,7 +124,7 @@ class VCardContactReader
     /**
      * Unmask value and add with typeinfo to phone list.
      * @param string $strValue
-     * @param array $aParams
+     * @param array<string,string> $aParams
      */
     protected function parseTel(string $strValue, array $aParams) : void
     {
@@ -133,7 +135,7 @@ class VCardContactReader
     /**
      * Unmask value and add to email list.
      * @param string $strValue
-     * @param array $aParams
+     * @param array<string,string> $aParams
      */
     protected function parseEMail(string $strValue, array $aParams) : void
     {
@@ -144,7 +146,7 @@ class VCardContactReader
     /**
      * Split into company and section.
      * @param string $strValue
-     * @param array $aParams
+     * @param array<string,string> $aParams
      */
     protected function parseOrg(string $strValue, array $aParams) : void
     {
@@ -158,7 +160,7 @@ class VCardContactReader
     /**
      * Split comma separated categories.
      * @param string $strValue
-     * @param array $aParams
+     * @param array<string,string> $aParams
      */
     protected function parseCategories(string $strValue, array $aParams) : void
     {
@@ -170,7 +172,7 @@ class VCardContactReader
 
     /**
      * @param string $strValue
-     * @param array $aParams
+     * @param array<string,string> $aParams
      */
     protected function parsePhoto(string $strValue, array $aParams) : void
     {
