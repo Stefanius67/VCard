@@ -44,7 +44,7 @@ class VCardContactReader
         //
         //      settername(string strValue);
         //
-        $aMethodOrProperty = array(
+        $aMethodOrProperty = [
             'N'             => 'parseName',
             'ADR'           => 'parseAdr',
             'TEL'           => 'parseTel',
@@ -59,9 +59,11 @@ class VCardContactReader
             'URL'           => 'addHomepage',
             'NOTE'          => 'setNote',
             'LABEL'         => 'setLabel',
-            'BDAY'          => 'setDateOfBirth',
-            'X-WAB-GENDER'  => 'setGender'
-        );
+            'BDAY'          => 'parseDateOfBirth',
+            'GENDER'        => 'setGender',
+            'X-GENDER'      => 'setGender',
+            'X-WAB-GENDER'  => 'setGender',
+        ];
 
         // supported only by vcard version 2.1
         if (isset($aParams['ENCODING']) && $aParams['ENCODING'] == 'QUOTED-PRINTABLE') {
@@ -168,6 +170,20 @@ class VCardContactReader
         foreach ($aSplit as $strCategory) {
             $this->oContact->addCategory($this->unmaskString($strCategory));
         }
+    }
+
+    /**
+     * Parse different formats of date of birth.
+     * - vCard v2.1 BDAY was specified without separators...
+     * - since v3.0 BDAY can contain '1996-04-15', '1953-10-15T23:10:00Z', '1987-09-27T08:30:00-06:00'
+     * @param string $strValue
+     * @param array $aParams
+     */
+    protected function parseDateOfBirth(string $strValue, array $aParams) : void
+    {
+        // we just try to create a valid DateTime object and pass it to the contact
+        $dtDoB = new \DateTime($strValue);
+        $this->oContact->setDateOfBirth($dtDoB);
     }
 
     /**

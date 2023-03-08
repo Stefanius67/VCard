@@ -73,8 +73,8 @@ class VCardContact
     protected array $aHomepages = array();
     /** @var string  date of birth in format YYYY-MM-DD */
     protected string $strDateOfBirth = '';
-    /** @var int     gender (0: not specified, 1: female, 2: male)  */
-    protected int $iGender = 0;
+    /** @var string  gender  */
+    protected string $strGender = '';
     /** @var string  note   */
     protected string $strNote = '';
     /** @var string  binary portrait base64 coded   */
@@ -158,23 +158,35 @@ class VCardContact
 
     /**
      * Set the gender.
-     * <b>Note: this is a MS-extension! </b><ul>
-     * <li> windows contacts: export/import. </li>
-     * <li> outlook: import only. </li></ul><br/>
-     * Only the first char of the `$strGender` param (converted to lowercase) is taken into account! <ul>
-     * <li> male: 'm', '2' </li>
-     * <li> female: 'f', 'w', '1' </li></ul>
+     * There are different posibilities:
+     * X-WAB-GENDER     MS-extension    '1':Female, '2':Male, '9':Unknown
+     * X-GENDER         Extension       'Female', 'Male'
+     *
+     * GENDER           vCard v4.0      A single letter
+     *      - M: "male"
+     *      - F: "female"
+     *      - O: "other"
+     *      - N: "none or not applicable"
+     *      - U: "unknown".
+     *
+     * So we accept everything of this know variants and convert it
+     * to the v4.0 single letter
+     * when we build the data.
      * @param string $strGender
      */
     public function setGender(string $strGender) : void
     {
-        $chGender = strtolower(substr($strGender, 0, 1));
-        if (in_array($chGender, array('w', 'f', self::MS_FEMALE))) {
-            // weibl., female
-            $this->iGender = 1;
-        } elseif (in_array($chGender, array('m', self::MS_MALE))) {
-            // männl., male
-            $this->iGender = 2;
+        $aMSGender = ['0' => '', '1' => 'F', '2' => 'M', '9' => 'U'];
+        if (isset($aMSGender[$strGender])) {
+            $this->strGender = $aMSGender[$strGender];
+        } else {
+            $chGender = strtoupper(substr($strGender, 0, 1));
+            if ($chGender == 'W') {
+                // ... tribute to german 'weiblich' ;-)
+                $this->strGender = 'F';
+            } else if (in_array($chGender, ['M', 'F', 'O', 'N', 'U'])) {
+                $this->strGender = $chGender;
+            }
         }
     }
 
@@ -656,12 +668,17 @@ class VCardContact
     }
 
     /**
-     * Get gender (Microsoft only).
-     * @return int  0: not set, 1: female, 2: male
+     * Get gender.
+     * M: "male"
+     * F: "female"
+     * O: "other"
+     * N: "none or not applicable"
+     * U: "unknown"
+     * @return string
      */
-    public function getGender() : int
+    public function getGender() : string
     {
-        return $this->iGender;
+        return $this->strGender;
     }
 
     /**

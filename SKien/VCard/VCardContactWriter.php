@@ -199,9 +199,20 @@ class VCardContactWriter
     protected function buildAdditionalData() : string
     {
         // personal data
-        $buffer = $this->buildProperty('BDAY', /** @scrutinizer ignore-type */ $this->oContact->getDateOfBirth()); /** @phpstan-ignore-line */
-        if ($this->oContact->getGender() > 0) {
-            $buffer .= $this->buildProperty('X-WAB-GENDER', (string)$this->oContact->getGender());
+        $buffer = $this->buildProperty('BDAY', /** @scrutinizer ignore-type */ $this->oContact->getDateOfBirth());
+        $strGender = $this->oContact->getGender();
+        if (strlen($strGender) > 0) {
+            if ($strGender == 'M') {
+                $buffer .= $this->buildProperty('X-WAB-GENDER', '1');
+                $buffer .= $this->buildProperty('X-GENDER', 'Female');
+            } else if ($strGender == 'F') {
+                $buffer .= $this->buildProperty('X-WAB-GENDER', '2');
+                $buffer .= $this->buildProperty('X-GENDER', 'Male');
+            } else {
+                $buffer .= $this->buildProperty('X-WAB-GENDER', '9');
+                $buffer .= $this->buildProperty('X-GENDER', 'Unknown');
+            }
+            $buffer .= $this->buildProperty('GENDER', $strGender);
         }
         // annotation
         $buffer .= $this->buildProperty('NOTE', $this->oContact->getNote());
