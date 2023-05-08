@@ -123,39 +123,15 @@ class VCardAddress
     public function parseFullAddress(string $strValue, array $aParams) : void
     {
         $aSplit = $this->explodeMaskedString(';', $strValue);
-        if (isset($aSplit[0])) {
-            // post office box
-            $this->strPOBox = $this->unmaskString($aSplit[0]);
-        }
-        if (isset($aSplit[1])) {
-            // extended address (e.g. apartment or suite number)
-            $this->strExtAddress = $this->unmaskString($aSplit[1]);
-        }
-        if (isset($aSplit[2])) {
-            // street (including house number)
-            $this->strStr = $this->unmaskString($aSplit[2]);
-        }
-        if (isset($aSplit[3])) {
-            // city
-            $this->strCity = $this->unmaskString($aSplit[3]);
-        }
-        if (isset($aSplit[4])) {
-            // region
-            $this->strRegion = $this->unmaskString($aSplit[4]);
-        }
-        if (isset($aSplit[5])) {
-            // postal code
-            $this->strPostcode = $this->unmaskString($aSplit[5]);
-        }
-        if (isset($aSplit[6])) {
-            // country
-            $this->strCountry = $this->unmaskString($aSplit[6]);
-        }
-        if (isset($aParams['TYPE'])) {
-            $this->strType = $aParams['TYPE'];
-        } else {
-            $this->strType = VCard::HOME;
-        }
+
+        $this->strPOBox = $this->unmaskString($aSplit[0] ?? '');
+        $this->strExtAddress = $this->unmaskString($aSplit[1] ?? '');
+        $this->strStr = $this->unmaskString($aSplit[2] ?? '');
+        $this->strCity = $this->unmaskString($aSplit[3] ?? '');
+        $this->strRegion = $this->unmaskString($aSplit[4] ?? '');
+        $this->strPostcode = $this->unmaskString($aSplit[5] ?? '');
+        $this->strCountry = $this->unmaskString($aSplit[6] ?? '');
+        $this->strType = $aParams['TYPE'] ?? VCard::HOME;
     }
 
     /**

@@ -177,7 +177,7 @@ class VCardContactReader
      * - vCard v2.1 BDAY was specified without separators...
      * - since v3.0 BDAY can contain '1996-04-15', '1953-10-15T23:10:00Z', '1987-09-27T08:30:00-06:00'
      * @param string $strValue
-     * @param array $aParams
+     * @param array<string,string> $aParams
      */
     protected function parseDateOfBirth(string $strValue, array $aParams) : void
     {

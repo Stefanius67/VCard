@@ -63,7 +63,7 @@ class VCardContact
     protected string $strRole = '';
     /** @var VCardAddress[] array of VCardAddress objects  */
     protected array $aAddress = array();
-    /** @var array[] array of phone numbers */
+    /** @var array<array<string,string>> array of phone numbers */
     protected array $aPhone = array();
     /** @var string[] array of email addresses   */
     protected array $aEMail = array();
@@ -142,7 +142,8 @@ class VCardContact
 
     /**
      * Set date of birth.
-     * @param mixed $DateOfBirth    may be string (format YYYY-MM-DD), int (unixtimestamp) or DateTime - object
+     * Accepts string (format YYYY-MM-DD), int (unixtimestamp) or DateTime - object
+     * @param string|int|\DateTime  $DateOfBirth
      */
     public function setDateOfBirth($DateOfBirth) : void
     {
@@ -371,27 +372,29 @@ class VCardContact
             $this->parseImageData($this->blobPortrait, $strType, $strImage);
             if (strlen($strType) > 0 && strlen($strImage) > 0) {
                 $img = $this->imageFromString($strImage, $strType);
-                imagealphablending($img, true);
-                imagesavealpha($img, true);
-                $strExt = strtolower((string)pathinfo($strFilename, PATHINFO_EXTENSION));
-                if (strlen($strExt) == 0) {
-                    $strExt = strtolower($strType);
-                    $strFilename .= '.' . $strExt;
-                }
-                switch ($strExt) {
-                    case 'jpg':
-                    case 'jpeg':
-                        imagejpeg($img, $strFilename);
-                        break;
-                    case 'png':
-                        imagepng($img, $strFilename);
-                        break;
-                    case 'gif':
-                        imagegif($img, $strFilename);
-                        break;
-                    case 'bmp':
-                        imagebmp($img, $strFilename);
-                        break;
+                if ($img !== false) {
+                    imagealphablending($img, true);
+                    imagesavealpha($img, true);
+                    $strExt = strtolower((string)pathinfo($strFilename, PATHINFO_EXTENSION));
+                    if (strlen($strExt) == 0) {
+                        $strExt = strtolower($strType);
+                        $strFilename .= '.' . $strExt;
+                    }
+                    switch ($strExt) {
+                        case 'jpg':
+                        case 'jpeg':
+                            imagejpeg($img, $strFilename);
+                            break;
+                        case 'png':
+                            imagepng($img, $strFilename);
+                            break;
+                        case 'gif':
+                            imagegif($img, $strFilename);
+                            break;
+                        case 'bmp':
+                            imagebmp($img, $strFilename);
+                            break;
+                    }
                 }
             }
         }
@@ -456,8 +459,8 @@ class VCardContact
      * For type requests (=> $i non numeric value): <ul>
      * <li> first phone matches specified type is used (contact may contains multiple phone numbers of same type) </li>
      * <li> if VCard::PREF specified, first number in contact used, if no preferred item found </li></ul>
-     * @param mixed $i     reference to address (int => index, string => type)
-     * @return array<string|string>|null
+     * @param int|string $i     reference to address (int => index, string => type)
+     * @return array<string,string>|null
      */
     public function getPhone($i) : ?array
     {

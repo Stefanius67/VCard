@@ -199,7 +199,7 @@ class VCardContactWriter
     protected function buildAdditionalData() : string
     {
         // personal data
-        $buffer = $this->buildProperty('BDAY', /** @scrutinizer ignore-type */ $this->oContact->getDateOfBirth());
+        $buffer = $this->buildProperty('BDAY', /** @scrutinizer ignore-type */ $this->oContact->getDateOfBirth()); // @phpstan-ignore-line
         $strGender = $this->oContact->getGender();
         if (strlen($strGender) > 0) {
             if ($strGender == 'M') {
