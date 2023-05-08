@@ -35,6 +35,10 @@ class VCardAddress
     protected string $strCountry = '';
     /** @var string  region */
     protected string $strRegion = '';
+    /** @var string  post office box */
+    protected string $strPOBox = '';
+    /** @var string  extended address (e.g. apartment or suite number) */
+    protected string $strExtAddress = '';
     /** @var string  type (VCard::HOME, VCard::WORK, VCard::POSTAL, VCard::PARCEL)  */
     protected string $strType = '';
     /** @var bool  preferred address  */
@@ -43,8 +47,8 @@ class VCardAddress
     /**
      * Full address information.
      * Build semicolon delimitered string containing:
-     *  - post office address (not supported)
-     *  - extended address (not supported)
+     *  - post office address (postbox)
+     *  - extended address (e.g. apartment or suite number)
      *  - street (including house number)
      *  - city
      *  - region
@@ -59,16 +63,16 @@ class VCardAddress
         if ($this->bPreferred) {
             $strField .= ',PREF';
         }
-        // post office address (not supported)
-        // extended address (not supported)
+        // postbox
+        // extended address
         // street (including house number)
         // city
         // region
         // postal code
         // country
         // values separated by semikolon
-        $strValue  = ';';
-        $strValue .= ';';
+        $strValue  = $this->maskString($this->strPOBox) . ';';
+        $strValue .= $this->maskString($this->strExtAddress) . ';';
         $strValue .= $this->maskString($this->strStr) . ';';
         $strValue .= $this->maskString($this->strCity) . ';';
         $strValue .= $this->maskString($this->strRegion) . ';';
@@ -103,8 +107,8 @@ class VCardAddress
 
     /**
      * explode string into address components:
-     *  - post office address (not supported)
-     *  - extended address (not supported)
+     *  - post office address (postbox)
+     *  - extended address (e.g. apartment or suite number)
      *  - street (including house number)
      *  - city
      *  - region
@@ -119,6 +123,14 @@ class VCardAddress
     public function parseFullAddress(string $strValue, array $aParams) : void
     {
         $aSplit = $this->explodeMaskedString(';', $strValue);
+        if (isset($aSplit[0])) {
+            // post office box
+            $this->strPOBox = $this->unmaskString($aSplit[0]);
+        }
+        if (isset($aSplit[1])) {
+            // extended address (e.g. apartment or suite number)
+            $this->strExtAddress = $this->unmaskString($aSplit[1]);
+        }
         if (isset($aSplit[2])) {
             // street (including house number)
             $this->strStr = $this->unmaskString($aSplit[2]);
@@ -174,7 +186,7 @@ class VCardAddress
     }
 
     /**
-     * Set country
+     * Set country.
      * @param string $strCountry
      */
     public function setCountry(string $strCountry) : void
@@ -183,12 +195,30 @@ class VCardAddress
     }
 
     /**
-     * Set region
+     * Set region.
      * @param string $strRegion
      */
     public function setRegion(string $strRegion) : void
     {
         $this->strRegion = $strRegion;
+    }
+
+    /**
+     * Set post office box.
+     * @param string $strPOBox
+     */
+    public function setPOBox(string $strPOBox) : void
+    {
+        $this->strPOBox = $strPOBox;
+    }
+
+    /**
+     * Set extended address (e.g. apartment or suite number).
+     * @param string $strExtAddress
+     */
+    public function setExtAddress(string $strExtAddress) : void
+    {
+        $this->strExtAddress = $strExtAddress;
     }
 
     /**
@@ -254,6 +284,24 @@ class VCardAddress
     public function getRegion() : string
     {
         return $this->strRegion;
+    }
+
+    /**
+     * Get post office box.
+     * @return string  $strPOBox
+     */
+    public function getPOBox() : string
+    {
+        return $this->strPOBox;
+    }
+
+    /**
+     * Get extended address (e.g. apartment or suite number).
+     * @return string  $strRegion
+     */
+    public function getExtAddress() : string
+    {
+        return $this->strExtAddress;
     }
 
     /**
