@@ -5,6 +5,7 @@
 		<verbose>true</verbose>
 		<debug>false</debug>
 		<norun>false</norun>
+		<nophpdoccheck>true</nophpdoccheck>
 	</options>
 	
 	<phpdoc>
