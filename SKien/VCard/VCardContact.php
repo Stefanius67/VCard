@@ -531,6 +531,30 @@ class VCardContact
     }
 
     /**
+     * Check, if contact is assigned to the requested categorie.
+     * @param string $strSearch
+     * @param bool $bCaseSensitive
+     * @return bool
+     */
+    public function hasCategory(string $strSearch, bool $bCaseSensitive = true) : bool
+    {
+        $bFound = false;
+        if (!$bCaseSensitive) {
+            $strSearch = strtolower($strSearch);
+        }
+        foreach ($this->aCategories as $strCategory) {
+            if (!$bCaseSensitive) {
+                $strCategory = strtolower($strCategory);
+            }
+            if ($strCategory == $strSearch) {
+                $bFound = true;
+                reak;
+            }
+        }
+        return $bFound;
+    }
+
+    /**
      * Return Categories separated by comma.
      * @return string
      */
