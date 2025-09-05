@@ -232,7 +232,7 @@ trait VCardHelper
      * Special processing for BMP cause there is no support in PHP before 7.2.
      * @param string    $strImage   base64 encoded image
      * @param string    $strType    image types supported by imagecreatefromstring
-     * @return resource|false    image resource
+     * @return \GdImage|false    image resource
      */
     protected function imageFromString(string $strImage, string $strType)
     {

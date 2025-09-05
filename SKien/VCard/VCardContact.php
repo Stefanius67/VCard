@@ -152,7 +152,7 @@ class VCardContact
             $this->strDateOfBirth = $DateOfBirth->format('Y-m-d');
         } else if (is_numeric($DateOfBirth)) {
             $this->strDateOfBirth = date('Y-m-d', intval($DateOfBirth));
-        } else {
+        } else if (is_string($DateOfBirth)) {
             $this->strDateOfBirth = $DateOfBirth;
         }
     }
@@ -548,7 +548,7 @@ class VCardContact
             }
             if ($strCategory == $strSearch) {
                 $bFound = true;
-                reak;
+                break;
             }
         }
         return $bFound;
