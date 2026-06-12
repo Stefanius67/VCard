@@ -192,7 +192,7 @@ class VCardContactReader
      */
     protected function parsePhoto(string $strValue, array $aParams) : void
     {
-        $strEncoding = isset($aParams['ENCODING']) ? $aParams['ENCODING'] : '';
+        $strEncoding = $aParams['ENCODING'] ?? '';
         if ($strEncoding == 'B' || $strEncoding == 'BASE64') {
             $strType = strtolower($aParams['TYPE']);
             $this->oContact->setPortraitBlob('data:image/' . $strType . ';base64,' . $strValue);
